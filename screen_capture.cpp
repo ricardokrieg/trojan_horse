@@ -3,7 +3,41 @@
 
 using namespace std;
 
-int main() {
+#include "gdi/include/GdiPlus.h"
+
+using namespace Gdiplus;
+
+int GetEncoderClsid(const WCHAR* format, CLSID* pClsid) {
+   UINT  num = 0;          // number of image encoders
+   UINT  size = 0;         // size of the image encoder array in bytes
+
+   ImageCodecInfo* pImageCodecInfo = NULL;
+
+   GetImageEncodersSize(&num, &size);
+   if(size == 0)
+      return -1;  // Failure
+
+   pImageCodecInfo = (ImageCodecInfo*)(malloc(size));
+   if(pImageCodecInfo == NULL)
+      return -1;  // Failure
+
+   GetImageEncoders(num, size, pImageCodecInfo);
+
+   for(UINT j = 0; j < num; ++j)
+   {
+      if( wcscmp(pImageCodecInfo[j].MimeType, format) == 0 )
+      {
+         *pClsid = pImageCodecInfo[j].Clsid;
+         free(pImageCodecInfo);
+         return j;  // Success
+      }
+   }
+
+   free(pImageCodecInfo);
+   return -1;  // Failure
+}
+
+void screen_capture() {
     unsigned int cx = GetSystemMetrics(SM_CXSCREEN), cy = GetSystemMetrics(SM_CYSCREEN);
     HDC hScreenDC = ::GetDC(NULL);
     HDC hMemDC = CreateCompatibleDC(hScreenDC);
@@ -20,7 +54,7 @@ int main() {
     pbmi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
     pbmi->bmiHeader.biBitCount = 0;
     if (!GetDIBits(hMemDC, hBitmap, 0, 0, NULL, pbmi, DIB_RGB_COLORS))
-        return 0;
+        return;
 
     BITMAPFILEHEADER bmf;
     if (pbmi->bmiHeader.biSizeImage <= 0)
@@ -32,10 +66,10 @@ int main() {
     if (!GetDIBits(hMemDC, hBitmap, 0, abs(pbmi->bmiHeader.biHeight), pData, pbmi, DIB_RGB_COLORS))
     {
         delete pData;
-        return 0;
+        return;
     }
 
-    FILE* hFile = fopen("file.bmp", "wb");
+    FILE* hFile = fopen("image.bmp", "wb");
     fwrite(&bmf, sizeof(BITMAPFILEHEADER), 1, hFile);
     fwrite(pbmi, headerSize, 1, hFile);
     fwrite(pData, pbmi->bmiHeader.biSizeImage, 1, hFile);
@@ -45,6 +79,26 @@ int main() {
     DeleteDC(hMemDC);
 
     delete [] pData;
+}
+
+void convert_to_jpeg() {
+    GdiplusStartupInput gdiplusStartupInput;
+    ULONG_PTR gdiplusToken;
+    GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+
+    Image image(L"image.bmp");
+
+    CLSID jpgClsid;
+    GetEncoderClsid(L"image/jpeg", &jpgClsid);
+    image.Save(L"image.jpg", &jpgClsid, NULL);
+}
+
+// To compile
+// i586-mingw32msvc-g++ -o screen_capture.exe screen_capture.cpp -L./gdi/lib -lgdi32 -lgdiplus
+
+int main() {
+    screen_capture();
+    convert_to_jpeg();
 
     return 0;
 }

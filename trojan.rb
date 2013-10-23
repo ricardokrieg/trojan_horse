@@ -1,9 +1,6 @@
-require 'RMagick'
 require 'base64'
 require 'net/http'
 require 'rbconfig'
-
-include Magick
 
 def os
     @os ||= (
@@ -38,29 +35,31 @@ def capture
             keybd_event.Call(0x2C,1,0,0) # Alt+Print Screen
         end
 
-        `convert clipboard: image.jpg`
+        `screen_capture.exe`
+        {format: 'bmp', image: Base64.encode64(open('image.bmp', 'rb') {|io| io.read})}
 
-        Image.read('image.jpg').first
+        # Image.from_blob(BMP::Reader.new('image.bmp')).first.to_blob {|img| img.format = 'jpg'}.first
+        # Image.from_blob(Image.read('image.bmp').first.to_blob {|img| img.format = 'jpg'}).first
     else
-        image = Image.capture {self.filename = 'root'}
+        require 'RMagick'
+
+        image = Magick::Image.capture {self.filename = 'root'}
         image.format = 'jpg'
 
-        image
+        {format: 'jpg', image: Base64.encode64(image.to_blob)}
     end
 end
 
-500.times do
-    # image = Image.capture {self.filename = 'root'}
-    # image.format = 'jpg'
-    image = capture
+2.times do
+    params = capture
 
-    image.scale!(0.8)
-    image64 = Base64.encode64(image.to_blob)
-    image.destroy!
+    # image.scale!(0.8)
+    # image64 = Base64.encode64(image.to_blob)
+    # image.destroy!
 
     # Net::HTTP.post_form(URI.parse('http://192.241.213.182:4567'), {image: image64})
     # Net::HTTP.post_form(URI.parse('http://127.0.0.1:4567'), {image: image64})
-    Net::HTTP.post_form(URI.parse('http://192.168.0.118:4567'), {image: image64})
+    Net::HTTP.post_form(URI.parse('http://192.168.0.118:4567'), params)
 
     sleep 0.5
 end
