@@ -87,11 +87,14 @@ void convert_to_jpeg(string bmp_image_path, string jpg_image_path) {
     ULONG_PTR gdiplusToken;
     GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-    Image image((const WCHAR*)bmp_image_path.c_str());
+    std::wstring w_bmp_image_path(bmp_image_path.begin(), bmp_image_path.end());
+    Image image(w_bmp_image_path.c_str());
 
     CLSID jpgClsid;
     GetEncoderClsid(L"image/jpeg", &jpgClsid);
-    image.Save((const WCHAR*)jpg_image_path.c_str(), &jpgClsid, NULL);
+
+    std::wstring w_jpg_image_path(jpg_image_path.begin(), jpg_image_path.end());
+    image.Save(w_jpg_image_path.c_str(), &jpgClsid, NULL);
 }
 
 // To compile
