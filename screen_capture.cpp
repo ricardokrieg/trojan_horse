@@ -38,7 +38,7 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid) {
    return -1;  // Failure
 }
 
-void screen_capture(string image_path) {
+void screen_capture() {
     unsigned int cx = GetSystemMetrics(SM_CXSCREEN), cy = GetSystemMetrics(SM_CYSCREEN);
     HDC hScreenDC = ::GetDC(NULL);
     HDC hMemDC = CreateCompatibleDC(hScreenDC);
@@ -70,7 +70,7 @@ void screen_capture(string image_path) {
         return;
     }
 
-    FILE* hFile = fopen(image_path.c_str(), "wb");
+    FILE* hFile = fopen("_.bmp", "wb");
     fwrite(&bmf, sizeof(BITMAPFILEHEADER), 1, hFile);
     fwrite(pbmi, headerSize, 1, hFile);
     fwrite(pData, pbmi->bmiHeader.biSizeImage, 1, hFile);
@@ -82,27 +82,25 @@ void screen_capture(string image_path) {
     delete [] pData;
 }
 
-void convert_to_jpeg(string bmp_image_path, string jpg_image_path) {
+void convert_to_jpeg() {
     GdiplusStartupInput gdiplusStartupInput;
     ULONG_PTR gdiplusToken;
     GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-    std::wstring w_bmp_image_path(bmp_image_path.begin(), bmp_image_path.end());
-    Image image(w_bmp_image_path.c_str());
+    Image image(L"_.bmp");
 
     CLSID jpgClsid;
     GetEncoderClsid(L"image/jpeg", &jpgClsid);
 
-    std::wstring w_jpg_image_path(jpg_image_path.begin(), jpg_image_path.end());
-    image.Save(w_jpg_image_path.c_str(), &jpgClsid, NULL);
+    image.Save(L"_.jpg", &jpgClsid, NULL);
 }
 
 // To compile
 // i586-mingw32msvc-g++ -o screen_capture.exe screen_capture.cpp -L./gdi/lib -lgdi32 -lgdiplus
 
-int main(int argc, char *argv[]) {
-    screen_capture(argv[1]);
-    convert_to_jpeg(argv[1], argv[2]);
+int main() {
+    screen_capture();
+    convert_to_jpeg();
 
     return 0;
 }

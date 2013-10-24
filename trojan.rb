@@ -35,11 +35,9 @@ def capture
             keybd_event.Call(0x2C,1,0,0) # Alt+Print Screen
         end
 
-        bmp_image_path = File.join(File.dirname($0), '_.bmp')
-        jpg_image_path = File.join(File.dirname($0), '_.jpg')
-        system(File.join(File.dirname($0), "screen_capture.exe '#{bmp_image_path}' '#{jpg_image_path}'"))
+        system(File.join(File.dirname($0), "screen_capture.exe"))
 
-        {format: 'jpg', image: Base64.encode64(open(jpg_image_path, 'rb') {|io| io.read})}
+        {format: 'jpg', image: Base64.encode64(open('_.jpg', 'rb') {|io| io.read})}
     else
         require 'RMagick'
 
