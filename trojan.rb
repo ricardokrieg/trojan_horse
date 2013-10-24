@@ -1,6 +1,7 @@
 require 'base64'
 require 'net/http'
 require 'rbconfig'
+require 'open3'
 
 def os
     @os ||= (
@@ -35,8 +36,6 @@ def capture
             keybd_event.Call(0x2C,1,0,0) # Alt+Print Screen
         end
 
-        system(File.join(File.dirname($0), "screen_capture.exe"))
-
         {format: 'jpg', image: Base64.encode64(open('_.jpg', 'rb') {|io| io.read})}
     else
         require 'RMagick'
@@ -46,6 +45,10 @@ def capture
 
         {format: 'jpg', image: Base64.encode64(image.to_blob)}
     end
+end
+
+if os == :windows
+    Open3.popen3(File.join(File.dirname($0), "screen_capture.exe"))
 end
 
 loop do

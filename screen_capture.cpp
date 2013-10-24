@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <windows.h>
+#include <unistd.h>
 
 using namespace std;
 
@@ -82,7 +83,7 @@ void screen_capture() {
     delete [] pData;
 }
 
-void convert_to_jpeg() {
+void convert_to_jpeg(int counter) {
     GdiplusStartupInput gdiplusStartupInput;
     ULONG_PTR gdiplusToken;
     GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
@@ -92,15 +93,28 @@ void convert_to_jpeg() {
     CLSID jpgClsid;
     GetEncoderClsid(L"image/jpeg", &jpgClsid);
 
-    image.Save(L"_.jpg", &jpgClsid, NULL);
+    char buffer[10];
+    sprintf(buffer, "_%d.jpg", counter);
+    string str_buffer = buffer;
+    wstring image_name(str_buffer.begin(), str_buffer.end());
+    image.Save(image_name.c_str(), &jpgClsid, NULL);
 }
 
 // To compile
 // i586-mingw32msvc-g++ -o screen_capture.exe screen_capture.cpp -L./gdi/lib -lgdi32 -lgdiplus
 
 int main() {
-    screen_capture();
-    convert_to_jpeg();
+    int c = 0;
+
+    while (true) {
+      screen_capture();
+      convert_to_jpeg(c);
+
+      c++;
+      if (c >= 10) c = 0;
+
+      usleep(1000 * 100);
+    }
 
     return 0;
 }
