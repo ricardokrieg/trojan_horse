@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <windows.h>
 
 using namespace std;
@@ -37,7 +38,7 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid) {
    return -1;  // Failure
 }
 
-void screen_capture(image_path) {
+void screen_capture(string image_path) {
     unsigned int cx = GetSystemMetrics(SM_CXSCREEN), cy = GetSystemMetrics(SM_CYSCREEN);
     HDC hScreenDC = ::GetDC(NULL);
     HDC hMemDC = CreateCompatibleDC(hScreenDC);
@@ -69,7 +70,7 @@ void screen_capture(image_path) {
         return;
     }
 
-    FILE* hFile = fopen(image_path, "wb");
+    FILE* hFile = fopen(image_path.c_str(), "wb");
     fwrite(&bmf, sizeof(BITMAPFILEHEADER), 1, hFile);
     fwrite(pbmi, headerSize, 1, hFile);
     fwrite(pData, pbmi->bmiHeader.biSizeImage, 1, hFile);
@@ -81,16 +82,16 @@ void screen_capture(image_path) {
     delete [] pData;
 }
 
-void convert_to_jpeg(bmp_image_path, jpg_image_path) {
+void convert_to_jpeg(string bmp_image_path, string jpg_image_path) {
     GdiplusStartupInput gdiplusStartupInput;
     ULONG_PTR gdiplusToken;
     GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-    Image image(bmp_image_path);
+    Image image((const WCHAR*)bmp_image_path.c_str());
 
     CLSID jpgClsid;
     GetEncoderClsid(L"image/jpeg", &jpgClsid);
-    image.Save(jpg_image_path, &jpgClsid, NULL);
+    image.Save((const WCHAR*)jpg_image_path.c_str(), &jpgClsid, NULL);
 }
 
 // To compile
@@ -98,7 +99,7 @@ void convert_to_jpeg(bmp_image_path, jpg_image_path) {
 
 int main(int argc, char *argv[]) {
     screen_capture(argv[1]);
-    convert_to_jpeg(argv[2]);
+    convert_to_jpeg(argv[1], argv[2]);
 
     return 0;
 }
