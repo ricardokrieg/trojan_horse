@@ -24,19 +24,11 @@ end
 
 def capture
     if os == :windows
-        require 'win32ole'
-        require 'Win32API'
+        filename = Dir.entries(Dir::pwd).sort_by {|f| File.mtime(f)}.last
+        image = nil
+        image = Base64.encode64(open(filename, 'rb') {|io| io.read}) if filename.start_with?('_')
 
-        keybd_event = Win32API.new('user32', 'keybd_event', ['I','I','L','L'], 'V')
-
-        active_window_only = false
-        if not active_window_only
-            keybd_event.Call(0x2C,0,0,0) # Print Screen
-        else
-            keybd_event.Call(0x2C,1,0,0) # Alt+Print Screen
-        end
-
-        {format: 'jpg', image: Base64.encode64(open('_.jpg', 'rb') {|io| io.read})}
+        {format: 'jpg', image: image}
     else
         require 'RMagick'
 
@@ -52,9 +44,12 @@ if os == :windows
 end
 
 loop do
-    params = capture
+    begin
+        params = capture
 
-    Net::HTTP.post_form(URI.parse('http://192.168.0.118:4567'), params)
+        Net::HTTP.post_form(URI.parse('http://192.168.0.118:4567'), params) unless params[:image].nil?
 
-    sleep 0.2
+        sleep 0.2
+    rescue Exception => e
+    end
 end
