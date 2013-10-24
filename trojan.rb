@@ -51,13 +51,7 @@ end
 loop do
     params = capture
 
-    # image.scale!(0.8)
-    # image64 = Base64.encode64(image.to_blob)
-    # image.destroy!
-
-    # Net::HTTP.post_form(URI.parse('http://192.241.213.182:4567'), {image: image64})
-    # Net::HTTP.post_form(URI.parse('http://127.0.0.1:4567'), {image: image64})
     Net::HTTP.post_form(URI.parse('http://192.168.0.118:4567'), params)
 
-    sleep 0.5
+    sleep 0.2
 end
