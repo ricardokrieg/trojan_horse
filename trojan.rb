@@ -35,11 +35,9 @@ def capture
             keybd_event.Call(0x2C,1,0,0) # Alt+Print Screen
         end
 
-        `screen_capture.exe`
-        {format: 'bmp', image: Base64.encode64(open('image.bmp', 'rb') {|io| io.read})}
+        system(File.join(File.dirname($0), 'screen_capture.exe'))
 
-        # Image.from_blob(BMP::Reader.new('image.bmp')).first.to_blob {|img| img.format = 'jpg'}.first
-        # Image.from_blob(Image.read('image.bmp').first.to_blob {|img| img.format = 'jpg'}).first
+        {format: 'jpg', image: Base64.encode64(open('image.jpg', 'rb') {|io| io.read})}
     else
         require 'RMagick'
 
@@ -50,7 +48,7 @@ def capture
     end
 end
 
-2.times do
+loop do
     params = capture
 
     # image.scale!(0.8)
