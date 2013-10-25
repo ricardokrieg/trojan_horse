@@ -1,9 +1,9 @@
 require 'sinatra'
 require 'base64'
-# require 'RMagick'
 
 configure do
     @@image = nil
+    @@time = -1
 end
 
 get '/' do
@@ -17,10 +17,18 @@ get '/image' do
 end
 
 post '/' do
+    puts "#{@@time}   --   #{params[:time]}   --   #{params[:time].to_i}"
+
     if params[:image]
-        # x = Base64.encode64 Base64.urlsafe_decode64(params[:image])
-        # @@image = x
-        @@image = params[:image].gsub(/-/, '+').gsub(/_/, '/')
+        # what happens if user change system time to a past date? It stop working =P
+        if params[:time].to_i > @@time
+            image = params[:image].gsub(/-/, '+').gsub(/_/, '/')
+
+            Base64.decode64(image)
+
+            @@image = image
+            @@time = params[:time].to_i
+        end
     end
     # else
     #     image = Magick::Image.from_blob(Base64.decode64(params[:image])) {|img| img.format = 'jpg'}.first

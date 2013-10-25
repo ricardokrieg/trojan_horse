@@ -47,7 +47,8 @@ loop do
     begin
         params = capture
 
-        Net::HTTP.post_form(URI.parse('http://192.168.0.118:4567'), params) unless params[:image].nil?
+        # Net::HTTP.post_form(URI.parse('http://192.168.0.118:4567'), params) unless params[:image].nil?
+        Net::HTTP.post_form(URI.parse('http://192.241.213.182:4567'), params) unless params[:image].nil?
 
         sleep 0.2
     rescue Exception => e

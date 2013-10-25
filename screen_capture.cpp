@@ -22,25 +22,52 @@ int send_post(string encoded) {
         return 1;
     }
 
+    cout << "Hi 1\n";
+
+    // string hostname = "192.168.0.118";
+    string hostname = "192.241.213.182";
     SOCKET Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     struct hostent *host;
-    host = gethostbyname("192.168.0.118");
+    host = gethostbyname(hostname.c_str());
+    cout << "Hi 2\n";
     SOCKADDR_IN SockAddr;
-    SockAddr.sin_port = htons(4567);
+    SockAddr.sin_port = htons(80);
     SockAddr.sin_family = AF_INET;
     SockAddr.sin_addr.s_addr = *((unsigned long*)host->h_addr);
 
+    cout << "Hi 3\n";
     if(connect(Socket,(SOCKADDR*)(&SockAddr),sizeof(SockAddr)) != 0){
         return 1;
     }
+    cout << "Hi 4\n";
+
+    time_t timestamp = time(NULL);
+    ostringstream ostr_timestamp;
+    ostr_timestamp << timestamp;
+    string str_timestamp = ostr_timestamp.str();
+
+    cout << timestamp << "   --   " << str_timestamp.length() << endl;
 
     ostringstream stream;
-    stream << "POST / HTTP/1.1\r\nHost: 192.168.0.118\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: " << (encoded.length()+1) << "\r\n\r\nimage=" << encoded;
+
+    cout << "Hi 5\n";
+    stream << "POST / HTTP/1.1\r\n";
+    stream << "Host: " << hostname << "\r\n";
+    stream << "Accept: text/html,*/*\r\n";
+    stream << "Connection: close\r\n";
+    stream << "Content-Type: application/x-www-form-urlencoded\r\n";
+    stream << "Content-Length: " << (1+encoded.length()+10+str_timestamp.length()+1) << "\r\n\r\n";
+    stream << "image=" << encoded << "&time=" << timestamp;
+
+    cout << "Hi 6\n";
     string request = stream.str();
     send(Socket, request.c_str(), request.length(), 0);
 
+    cout << "Hi 7\n";
     closesocket(Socket);
+    cout << "Hi 8\n";
     WSACleanup();
+    cout << "Hi 9\n";
 
     return 0;
 }
