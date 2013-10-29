@@ -1,10 +1,35 @@
 #include "helper.h"
 #include "screen_manager.h"
 
+// $P$DzSFfbDiQWLOLo9NVQtQsyTnL0f4NO1
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+BOOL __stdcall EnumWindowsStationProc(LPTSTR lpszWindowStation, LPARAM lParam) {
+    cout << lpszWindowStation << endl;
+
+    HWINSTA hwinsta = OpenWindowStation(lpszWindowStation, 0, WINSTA_ALL_ACCESS);
+
+    if (hwinsta != NULL) {
+        cout << "SetProcessWindowStation" << endl;
+        SetProcessWindowStation(hwinsta);
+
+        HDESK hdesk;
+        hdesk = OpenDesktop((char *)"default", 0, FALSE, DESKTOP_CREATEMENU | DESKTOP_CREATEWINDOW | DESKTOP_ENUMERATE | DESKTOP_HOOKCONTROL | DESKTOP_JOURNALPLAYBACK | DESKTOP_JOURNALRECORD | DESKTOP_READOBJECTS | DESKTOP_SWITCHDESKTOP | DESKTOP_WRITEOBJECTS);
+        cout << "Desktop: " << hdesk << endl;
+
+        SetThreadDesktop(hdesk);
+    }
+
+    return true;
+}
+
 ScreenManager::ScreenManager(void) {
+    cout << "EnumWindowStations" << endl;
+    EnumWindowStations(EnumWindowsStationProc, 0);
+
+
     GdiplusStartupInput gdiplusStartupInput;
     ULONG_PTR gdiplusToken;
     GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
