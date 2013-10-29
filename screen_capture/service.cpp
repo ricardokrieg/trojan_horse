@@ -12,6 +12,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+ofstream output;
+
 ServiceManager *service_manager;
 
 //------------------------------------------------------------------------------
@@ -64,7 +66,14 @@ int __cdecl _tmain(int argc, TCHAR *argv[]) {
     }
 
     if (lstrcmpi(argv[1], TEXT("debug")) == 0) {
-        service_manager->debug();
+        streambuf* sbuf = cout.rdbuf();
+        output.open("cout.txt");
+        cout.rdbuf(output.rdbuf());
+
+        service_manager->main();
+
+        cout << flush;
+
         return 0;
     }
 

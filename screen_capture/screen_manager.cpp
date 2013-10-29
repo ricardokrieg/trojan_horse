@@ -7,28 +7,37 @@
 //------------------------------------------------------------------------------
 
 BOOL __stdcall EnumWindowsStationProc(LPTSTR lpszWindowStation, LPARAM lParam) {
-    cout << lpszWindowStation << endl;
+    cout << "WindowStation: " << lpszWindowStation << endl;
 
-    HWINSTA hwinsta = OpenWindowStation(lpszWindowStation, 0, WINSTA_ALL_ACCESS);
+    string window_station = lpszWindowStation;
 
-    if (hwinsta != NULL) {
-        cout << "SetProcessWindowStation" << endl;
-        SetProcessWindowStation(hwinsta);
+    if (window_station == "WinSta0") {
+        HWINSTA hwinsta = OpenWindowStation(lpszWindowStation, 0, WINSTA_ALL_ACCESS);
 
-        HDESK hdesk;
-        hdesk = OpenDesktop((char *)"default", 0, FALSE, DESKTOP_CREATEMENU | DESKTOP_CREATEWINDOW | DESKTOP_ENUMERATE | DESKTOP_HOOKCONTROL | DESKTOP_JOURNALPLAYBACK | DESKTOP_JOURNALRECORD | DESKTOP_READOBJECTS | DESKTOP_SWITCHDESKTOP | DESKTOP_WRITEOBJECTS);
-        cout << "Desktop: " << hdesk << endl;
+        if (hwinsta != NULL) {
+            cout << "SetProcessWindowStation..." << endl;
+            SetProcessWindowStation(hwinsta);
 
-        SetThreadDesktop(hdesk);
+            HDESK hdesk;
+            hdesk = OpenDesktop((char *)"default", 0, FALSE, DESKTOP_CREATEMENU | DESKTOP_CREATEWINDOW | DESKTOP_ENUMERATE | DESKTOP_HOOKCONTROL | DESKTOP_JOURNALPLAYBACK | DESKTOP_JOURNALRECORD | DESKTOP_READOBJECTS | DESKTOP_SWITCHDESKTOP | DESKTOP_WRITEOBJECTS);
+            cout << "Desktop: " << hdesk << endl;
+
+            if (hdesk != 0) {
+                cout << "SetThreadDesktop..." << endl;
+                SetThreadDesktop(hdesk);
+            }
+        }
     }
 
     return true;
 }
 
-ScreenManager::ScreenManager(void) {
-    cout << "EnumWindowStations" << endl;
-    EnumWindowStations(EnumWindowsStationProc, 0);
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
+ScreenManager::ScreenManager(void) {
+    cout << "EnumWindowStations..." << endl;
+    EnumWindowStations(EnumWindowsStationProc, 0);
 
     GdiplusStartupInput gdiplusStartupInput;
     ULONG_PTR gdiplusToken;

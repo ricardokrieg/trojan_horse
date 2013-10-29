@@ -19,11 +19,9 @@ class ServiceManager {
         ServiceManager(string);
         ~ServiceManager(void);
 
+        void main(void);
         void install(void);
-        void debug(void);
-
         void start_service_ctrl_dispatcher(void);
-
         void init(DWORD, LPTSTR*);
 
         void report_status(DWORD, DWORD, DWORD);
