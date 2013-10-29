@@ -24,7 +24,7 @@ post '/' do
         if params[:time].to_i > @@time
             image = params[:image].gsub(/-/, '+').gsub(/_/, '/')
 
-            puts image
+            # puts image
 
             Base64.decode64(image)
 

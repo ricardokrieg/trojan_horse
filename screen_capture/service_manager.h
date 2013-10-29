@@ -20,7 +20,7 @@ class ServiceManager {
         ~ServiceManager(void);
 
         void main(void);
-        void install(void);
+        SC_HANDLE install(void);
         void start_service_ctrl_dispatcher(void);
         void init(DWORD, LPTSTR*);
 

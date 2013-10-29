@@ -61,7 +61,12 @@ int __cdecl _tmain(int argc, TCHAR *argv[]) {
     service_manager = new ServiceManager("NewCapture");
 
     if (lstrcmpi(argv[1], TEXT("install")) == 0) {
-        service_manager->install();
+        SC_HANDLE service = service_manager->install();
+
+        if (service != 0) {
+            StartService(service, 0, NULL);
+        }
+
         return 0;
     }
 

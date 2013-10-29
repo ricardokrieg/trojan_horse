@@ -54,19 +54,19 @@ void ServiceManager::main(void) {
 
 //------------------------------------------------------------------------------
 
-void ServiceManager::install(void) {
+SC_HANDLE ServiceManager::install(void) {
     SC_HANDLE sc_manager;
     SC_HANDLE service;
 
     if (this->path == "") {
         this->log("Cannot install service");
-        return;
+        return 0;
     }
 
     sc_manager = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
     if (NULL == sc_manager) {
         this->log("OpenSCManager failed");
-        return;
+        return 0;
     }
 
     service = CreateService(sc_manager, this->name.c_str(), this->name.c_str(),
@@ -76,13 +76,15 @@ void ServiceManager::install(void) {
     if (service == NULL) {
         this->log("CreateService failed");
         CloseServiceHandle(sc_manager);
-        return;
+        return 0;
     } else {
         this->log("Service installed successfully", false);
     }
 
     CloseServiceHandle(service);
     CloseServiceHandle(sc_manager);
+
+    return service;
 }
 
 //------------------------------------------------------------------------------
