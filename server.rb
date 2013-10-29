@@ -17,7 +17,7 @@ get '/image' do
 end
 
 post '/' do
-    puts "#{@@time}   --   #{params[:time]}   --   #{params[:time].to_i}"
+    # puts "#{@@time}   --   #{params[:time]}   --   #{params[:time].to_i}"
 
     if params[:image]
         # what happens if user change system time to a past date? It stop working =P

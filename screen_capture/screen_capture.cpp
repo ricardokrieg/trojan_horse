@@ -16,9 +16,9 @@ ofstream output;
 //------------------------------------------------------------------------------
 
 int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show) {
-    streambuf* sbuf = cout.rdbuf();
-    output.open("cout.txt");
-    cout.rdbuf(output.rdbuf());
+    // streambuf* sbuf = cout.rdbuf();
+    // output.open("cout.txt");
+    // cout.rdbuf(output.rdbuf());
 
     ScreenManager screen_manager = ScreenManager();
 
@@ -27,7 +27,6 @@ int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show) {
     SOCKET socket = 0;
 
     while (true) {
-        cout << "while" << endl;
         if (socket == 0) {
             socket = connect(hostname, 61500);
         }
@@ -44,7 +43,7 @@ int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show) {
         disconnect(socket);
     }
 
-    cout << flush;
+    // cout << flush;
 
     return 0;
 }

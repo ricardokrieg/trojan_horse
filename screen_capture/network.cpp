@@ -50,12 +50,13 @@ void send_image(SOCKET Socket, string encoded, string hostname) {
     stream << "POST / HTTP/1.1\r\n";
     stream << "Host: " << hostname << "\r\n";
     stream << "Accept: text/html,*/*\r\n";
+    stream << "Connection: keep-alive\r\n";
     stream << "Content-Type: application/x-www-form-urlencoded\r\n";
     stream << "Content-Length: " << (1+encoded.length()+10+str_timestamp.length()+1) << "\r\n\r\n";
     stream << "image=" << encoded << "&time=" << timestamp;
 
     string request = stream.str();
-    cout << send(Socket, request.c_str(), request.length(), 0) << endl;
+    send(Socket, request.c_str(), request.length(), 0);
 }
 
 //------------------------------------------------------------------------------

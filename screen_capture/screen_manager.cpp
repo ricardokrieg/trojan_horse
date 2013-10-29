@@ -58,8 +58,12 @@ string ScreenManager::capture(void) {
         buffer += c_buffer;
 
         if (result == S_OK) {
-            if (read_bytes < 1) {break;}
-        } else {break;}
+            if (read_bytes < 1) {
+                break;
+            }
+        } else {
+            break;
+        }
     }
 
     stream->Release();
