@@ -20,13 +20,9 @@ static const std::string base64_chars =
     "abcdefghijklmnopqrstuvwxyz"
     "0123456789-_";
 
-//------------------------------------------------------------------------------
-
 std::string base64_encode(unsigned char const*, unsigned int);
 
 //------------------------------------------------------------------------------
-
-string file_to_string(string);
 
 void wait(void);
 

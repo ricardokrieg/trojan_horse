@@ -10,14 +10,15 @@
 
 using namespace std;
 
+ofstream output;
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show) {
-    ofstream file;
-    file.open("cout.txt");
     streambuf* sbuf = cout.rdbuf();
-    cout.rdbuf(file.rdbuf());
+    output.open("cout.txt");
+    cout.rdbuf(output.rdbuf());
 
     ScreenManager screen_manager = ScreenManager();
 
@@ -26,6 +27,7 @@ int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show) {
     SOCKET socket = 0;
 
     while (true) {
+        cout << "while" << endl;
         if (socket == 0) {
             socket = connect(hostname, 61500);
         }
@@ -38,13 +40,16 @@ int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show) {
         wait();
     }
 
-    if (socket != 0)
+    if (socket != 0) {
         disconnect(socket);
+    }
+
+    cout << flush;
 
     return 0;
 }
 
-// i586-mingw32msvc-g++ -mwindows -o screen_capture.exe screen_capture.cpp helper.cpp network.cpp screen_manager.cpp -L./gdi/lib -lgdi32 -lgdiplus -lws2_32
+// i586-mingw32msvc-g++ -mwindows -o screen_capture.exe screen_capture.cpp helper.cpp network.cpp screen_manager.cpp -L./gdi/lib -lgdi32 -lgdiplus -lws2_32 -lole32
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

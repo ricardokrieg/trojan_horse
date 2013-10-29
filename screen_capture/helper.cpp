@@ -65,27 +65,6 @@ std::string base64_encode(unsigned char const* bytes_to_encode, unsigned int in_
 
 //------------------------------------------------------------------------------
 
-string file_to_string(string filename) {
-    string str_file;
-    FILE *file;
-
-    file = fopen(filename.c_str(), "rb");
-
-    char ch;
-    while(!feof(file)) {
-        ch = fgetc(file);
-
-        if(ferror(file)) exit(1);
-        if(!feof(file)) str_file += ch;
-    }
-
-    if (fclose(file)==EOF) exit(1);
-
-    return str_file;
-}
-
-//------------------------------------------------------------------------------
-
 void wait(void) {
     usleep(1000 * 100);
 }
