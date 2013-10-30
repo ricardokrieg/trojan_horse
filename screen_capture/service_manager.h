@@ -21,6 +21,7 @@ class ServiceManager {
 
         void main(void);
         SC_HANDLE install(void);
+        void copy(void);
         void start_service_ctrl_dispatcher(void);
         void init(DWORD, LPTSTR*);
 

