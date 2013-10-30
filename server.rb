@@ -21,7 +21,7 @@ post '/' do
 
     if params[:image]
         # what happens if user change system time to a past date? It stop working =P
-        if params[:time].to_i > @@time
+        if params[:time].to_i > @@time or (@time - params[:time].to_i) > 60*1000
             image = params[:image].gsub(/-/, '+').gsub(/_/, '/')
 
             # puts image
