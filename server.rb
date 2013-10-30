@@ -17,11 +17,11 @@ get '/image' do
 end
 
 post '/' do
-    # puts "#{@@time}   --   #{params[:time]}   --   #{params[:time].to_i}"
+    # puts "#{@@time}   --   #{params[:time]}   --   #{(@@time - params[:time].to_i)}"
 
     if params[:image]
         # what happens if user change system time to a past date? It stop working =P
-        if params[:time].to_i > @@time or (@@time - params[:time].to_i) > 60*1000
+        if params[:time].to_i >= @@time or (@@time - params[:time].to_i) > 60
             image = params[:image].gsub(/-/, '+').gsub(/_/, '/')
 
             # puts image
