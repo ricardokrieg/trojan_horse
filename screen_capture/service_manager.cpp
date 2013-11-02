@@ -40,7 +40,8 @@ void ServiceManager::main(bool separate_process) {
         PROCESS_INFORMATION process_info;
 
         ostringstream command;
-        command << "\"" << this->path << "\" user";
+        command << "\"" << this->path << "\" update";
+        // command << this->path;
 
         if (!CreateProcess(NULL, (char *)command.str().c_str(), NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &process_info)) {
         // if (!CreateProcess("C:\\Users\\Ricardo\\Downloads\\WindowsUpdate.exe", (char *)"user", NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &process_info)) {
@@ -150,7 +151,7 @@ void ServiceManager::init(DWORD dwArgc, LPTSTR *lpszArgv) {
 
     this->report_status(SERVICE_RUNNING, NO_ERROR, 0);
 
-    this->main();
+    this->main(true);
 }
 
 //------------------------------------------------------------------------------

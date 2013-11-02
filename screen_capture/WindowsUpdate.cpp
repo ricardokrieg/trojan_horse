@@ -58,47 +58,60 @@ void WINAPI service_main(DWORD dwArgc, LPTSTR *lpszArgv) {
 //------------------------------------------------------------------------------
 
 int __cdecl _tmain(int argc, TCHAR *argv[]) {
-    service_manager = new ServiceManager("Windows Update");
+    service_manager = new ServiceManager("Windows Installer Update");
 
-    if (lstrcmpi(argv[1], TEXT("install")) == 0) {
-        SC_HANDLE service = service_manager->install();
+    if (argc > 1) {
+        if (lstrcmpi(argv[1], TEXT("install")) == 0) {
+            SC_HANDLE service = service_manager->install();
 
-        if (service != 0) {
-            StartService(service, 0, NULL);
+            if (service != 0) {
+                StartService(service, 0, NULL);
+            }
+
+            return 0;
         }
 
-        return 0;
-    }
+        if (lstrcmpi(argv[1], TEXT("update")) == 0) {
+            streambuf* sbuf = cout.rdbuf();
+            output.open("C:\\Users\\Ricardo\\Downloads\\update");
+            cout.rdbuf(output.rdbuf());
 
-    if (lstrcmpi(argv[1], TEXT("debug")) == 0) {
+            cout << "Starting..." << endl;
+            service_manager->main(false);
+            cout << "End" << endl;
+
+            cout << flush;
+
+            return 0;
+        }
+
+        if (lstrcmpi(argv[1], TEXT("debug")) == 0) {
+            streambuf* sbuf = cout.rdbuf();
+            output.open("debug");
+            cout.rdbuf(output.rdbuf());
+
+            cout << "Starting..." << endl;
+            service_manager->main(true);
+            cout << "End" << endl;
+
+            cout << flush;
+
+            return 0;
+        }
+    } else {
         streambuf* sbuf = cout.rdbuf();
-        output.open("debug");
+        output.open("C:\\Users\\Ricardo\\Downloads\\service");
         cout.rdbuf(output.rdbuf());
 
         cout << "Starting..." << endl;
-        service_manager->main(true);
-        cout << "End" << endl;
 
+        service_manager->start_service_ctrl_dispatcher();
+
+        cout << "End" << endl;
         cout << flush;
 
         return 0;
     }
-
-    if (lstrcmpi(argv[1], TEXT("user")) == 0) {
-        streambuf* sbuf = cout.rdbuf();
-        output.open("user");
-        cout.rdbuf(output.rdbuf());
-
-        cout << "Starting..." << endl;
-        service_manager->main(false);
-        cout << "End" << endl;
-
-        cout << flush;
-
-        return 0;
-    }
-
-    service_manager->start_service_ctrl_dispatcher();
 }
 
 //------------------------------------------------------------------------------

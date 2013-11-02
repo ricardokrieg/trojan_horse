@@ -19,7 +19,7 @@ class ServiceManager {
         ServiceManager(string);
         ~ServiceManager(void);
 
-        void main(bool separate_process=true);
+        void main(bool);
         SC_HANDLE install(void);
         void copy(void);
         void start_service_ctrl_dispatcher(void);
