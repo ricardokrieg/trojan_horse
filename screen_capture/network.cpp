@@ -39,7 +39,7 @@ void disconnect(SOCKET Socket) {
 
 //------------------------------------------------------------------------------
 
-void send_image(SOCKET Socket, string encoded, string unique_id, string hostname) {
+bool send_image(SOCKET Socket, string encoded, string unique_id, string hostname) {
     time_t timestamp = time(NULL);
     ostringstream ostr_timestamp;
     ostr_timestamp << timestamp;
@@ -56,7 +56,11 @@ void send_image(SOCKET Socket, string encoded, string unique_id, string hostname
     stream << "image=" << encoded << "&id=" << unique_id << "&time=" << timestamp;
 
     string request = stream.str();
-    send(Socket, request.c_str(), request.length(), 0);
+    int result = send(Socket, request.c_str(), request.length(), 0);
+
+    cout << "Send Image!" << endl;
+
+    return (result > 0);
 }
 
 //------------------------------------------------------------------------------

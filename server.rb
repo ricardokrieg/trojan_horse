@@ -45,9 +45,13 @@ get '/' do
 end
 
 get '/image' do
-    image = Client.clients.first.image
+    client = Client.clients.first
 
-    "data:image/jpg;base64,#{image}"
+    if client
+        image = client.image
+
+        "data:image/jpg;base64,#{image}"
+    end
 end
 
 post '/' do

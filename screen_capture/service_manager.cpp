@@ -52,23 +52,20 @@ void ServiceManager::main(bool separate_process) {
         SOCKET socket = 0;
 
         while (1) {
-            // cout << "1: " << socket << endl;
+            cout << "Socket: " << socket << endl;
 
             if (socket == 0) {
                 socket = connect(hostname, 61500);
             }
 
-            // cout << "2: " << socket << endl;
-
             if (socket != 0) {
                 string image = screen_manager.capture();
-                send_image(socket, image, this->unique_id, hostname);
+                bool success = send_image(socket, image, this->unique_id, hostname);
 
-                // check if response == 1
-                // if not, then try to reconnect
+                if (!success) {
+                    socket = 0;
+                }
             }
-
-            // cout << "3: " << socket << endl;
 
             wait();
         }
