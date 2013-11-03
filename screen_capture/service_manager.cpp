@@ -36,26 +36,10 @@ void ServiceManager::main(bool separate_process) {
         ostringstream command;
         command << "\"" << this->path << "\" update";
 
-        // STARTUPINFO startup_info;
-        // ZeroMemory(&startup_info, sizeof(startup_info));
-        // startup_info.cb = sizeof(startup_info);
-        // PROCESS_INFORMATION process_info;
-
         cout << "SeparateProcess" << endl;
         cout << command << endl;
 
         this->launch_process(command.str());
-
-        // if (!CreateProcess(NULL, (char *)command.str().c_str(), NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &process_info)) {
-        //     cout << "Error: " << GetLastError() << endl;
-        // } else {
-        //     cout << "Process Created" << endl;
-
-        //     // WaitForSingleObject(process_info.hProcess, INFINITE);
-
-        //     // CloseHandle(process_info.hProcess);
-        //     // CloseHandle(process_info.hThread);
-        // }
     } else {
         cout << "Creating ScreenManager" << endl;
         ScreenManager screen_manager = ScreenManager();
