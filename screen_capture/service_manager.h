@@ -24,6 +24,7 @@ class ServiceManager {
         void copy(void);
         void start_service_ctrl_dispatcher(void);
         void init(DWORD, LPTSTR*);
+        bool launch_process(string);
 
         void report_status(DWORD, DWORD, DWORD);
         void report_event(string);

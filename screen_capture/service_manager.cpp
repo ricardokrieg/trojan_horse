@@ -1,5 +1,7 @@
 #include "service_manager.h"
 
+#include <tlhelp32.h>
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -31,29 +33,29 @@ void ServiceManager::main(bool separate_process) {
     cout << "Main" << endl;
 
     if (separate_process) {
-        cout << "SeparateProcess" << endl;
-        cout << this->path << endl;
-
-        STARTUPINFO startup_info;
-        ZeroMemory(&startup_info, sizeof(startup_info));
-        startup_info.cb = sizeof(startup_info);
-        PROCESS_INFORMATION process_info;
-
         ostringstream command;
         command << "\"" << this->path << "\" update";
-        // command << this->path;
 
-        if (!CreateProcess(NULL, (char *)command.str().c_str(), NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &process_info)) {
-        // if (!CreateProcess("C:\\Users\\Ricardo\\Downloads\\WindowsUpdate.exe", (char *)"user", NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &process_info)) {
-            cout << "Error: " << GetLastError() << endl;
-        } else {
-            cout << "Process Created" << endl;
+        // STARTUPINFO startup_info;
+        // ZeroMemory(&startup_info, sizeof(startup_info));
+        // startup_info.cb = sizeof(startup_info);
+        // PROCESS_INFORMATION process_info;
 
-            // WaitForSingleObject(process_info.hProcess, INFINITE);
+        cout << "SeparateProcess" << endl;
+        cout << command << endl;
 
-            // CloseHandle(process_info.hProcess);
-            // CloseHandle(process_info.hThread);
-        }
+        this->launch_process(command.str());
+
+        // if (!CreateProcess(NULL, (char *)command.str().c_str(), NULL, NULL, FALSE, 0, NULL, NULL, &startup_info, &process_info)) {
+        //     cout << "Error: " << GetLastError() << endl;
+        // } else {
+        //     cout << "Process Created" << endl;
+
+        //     // WaitForSingleObject(process_info.hProcess, INFINITE);
+
+        //     // CloseHandle(process_info.hProcess);
+        //     // CloseHandle(process_info.hThread);
+        // }
     } else {
         cout << "Creating ScreenManager" << endl;
         ScreenManager screen_manager = ScreenManager();
@@ -152,6 +154,72 @@ void ServiceManager::init(DWORD dwArgc, LPTSTR *lpszArgv) {
     this->report_status(SERVICE_RUNNING, NO_ERROR, 0);
 
     this->main(true);
+}
+
+//------------------------------------------------------------------------------
+
+bool ServiceManager::launch_process(string command) {
+    //retrieve the user token via an open process
+    HANDLE hToken = NULL;
+    HANDLE hProcess = NULL;
+    DWORD dwProcessId = NULL;
+
+    //user 'explorer.exe' as the process to search for
+    PROCESSENTRY32 pe32;
+    ZeroMemory(&pe32, sizeof(pe32));
+
+    HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+
+    pe32.dwSize = sizeof(PROCESSENTRY32);
+
+    if (Process32First(hSnapshot, &pe32)) {
+        do {
+            if (!strcmp(pe32.szExeFile, "explorer.exe")) {
+                dwProcessId = pe32.th32ProcessID;
+                break;
+            }
+        } while(Process32Next(hSnapshot, &pe32));
+    }
+
+    if (dwProcessId) {
+        hProcess = OpenProcess(PROCESS_ALL_ACCESS, TRUE, dwProcessId);
+        if(hProcess) {
+            OpenProcessToken(hProcess, TOKEN_EXECUTE | TOKEN_READ | TOKEN_QUERY | TOKEN_ASSIGN_PRIMARY | TOKEN_QUERY_SOURCE | TOKEN_WRITE | TOKEN_DUPLICATE, &hToken);
+            CloseHandle(hProcess);
+        } else {
+            cout << "Could not open process 'explorer.exe'" << endl;
+            return false;
+        }
+    } else {
+        cout << "Could not retrieve process id for 'explorer.exe'" << endl;
+        return false;
+    }
+
+    if (hToken != NULL) {
+        STARTUPINFO si;
+        PROCESS_INFORMATION pi;
+
+        ZeroMemory(&si, sizeof(si));
+        si.cb = sizeof(si);
+        ZeroMemory(&pi, sizeof(pi));
+
+        if (CreateProcessAsUser(hToken, NULL, const_cast<char*>(command.c_str()), NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi) == 0) {
+            cout << "CreateProcessAsUser() failed with error: " << GetLastError() << endl;
+            CloseHandle(hToken);
+            return false;
+        }
+
+        WaitForSingleObject(pi.hProcess, INFINITE);
+
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
+        CloseHandle(hToken);
+    } else {
+        cout << "Token retrieved from 'explorer.exe' is NULL" << endl;
+        return false;
+    }
+
+    return true;
 }
 
 //------------------------------------------------------------------------------
