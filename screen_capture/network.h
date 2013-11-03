@@ -8,7 +8,7 @@ using namespace std;
 
 SOCKET connect(string, int);
 void disconnect(SOCKET);
-void send_image(SOCKET, string, string);
+void send_image(SOCKET, string, string, string);
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

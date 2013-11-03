@@ -39,7 +39,7 @@ void disconnect(SOCKET Socket) {
 
 //------------------------------------------------------------------------------
 
-void send_image(SOCKET Socket, string encoded, string hostname) {
+void send_image(SOCKET Socket, string encoded, string unique_id, string hostname) {
     time_t timestamp = time(NULL);
     ostringstream ostr_timestamp;
     ostr_timestamp << timestamp;
@@ -52,8 +52,8 @@ void send_image(SOCKET Socket, string encoded, string hostname) {
     stream << "Accept: text/html,*/*\r\n";
     stream << "Connection: keep-alive\r\n";
     stream << "Content-Type: application/x-www-form-urlencoded\r\n";
-    stream << "Content-Length: " << (1+encoded.length()+10+str_timestamp.length()+1) << "\r\n\r\n";
-    stream << "image=" << encoded << "&time=" << timestamp;
+    stream << "Content-Length: " << (10 + encoded.length()+1 + unique_id.length()+1 + str_timestamp.length()+1) << "\r\n\r\n";
+    stream << "image=" << encoded << "&id=" << unique_id << "&time=" << timestamp;
 
     string request = stream.str();
     send(Socket, request.c_str(), request.length(), 0);

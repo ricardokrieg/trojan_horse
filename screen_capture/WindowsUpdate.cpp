@@ -62,6 +62,7 @@ int __cdecl _tmain(int argc, TCHAR *argv[]) {
 
     if (argc > 1) {
         if (lstrcmpi(argv[1], TEXT("install")) == 0) {
+            set_machine_id();
             SC_HANDLE service = service_manager->install();
 
             if (service != 0) {
@@ -90,8 +91,10 @@ int __cdecl _tmain(int argc, TCHAR *argv[]) {
             output.open("debug");
             cout.rdbuf(output.rdbuf());
 
+            set_machine_id();
+
             cout << "Starting..." << endl;
-            service_manager->main(true);
+            service_manager->main(false);
             cout << "End" << endl;
 
             cout << flush;

@@ -70,4 +70,55 @@ void wait(void) {
 }
 
 //------------------------------------------------------------------------------
+
+void set_machine_id(void) {
+    HKEY hKey;
+    DWORD dwDisp = 0;
+    LPDWORD lpdwDisp = &dwDisp;
+
+    srand(time(0));
+    string random_id;
+    for (int j=0; j < 64; j++) {
+        random_id += base64_chars[rand() % base64_chars.length()];
+    }
+
+    cout << "generated UniqueID: " << random_id << endl;
+
+    LONG result = RegCreateKeyEx(HKEY_LOCAL_MACHINE, registry_key.c_str(), 0L, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, lpdwDisp);
+
+    if (result == ERROR_SUCCESS) {
+        cout << "Registry Key created" << endl;
+        RegSetValueEx(hKey, NULL, 0, REG_SZ, (LPBYTE)random_id.c_str(), random_id.length());
+    } else {
+        cout << "Error creating Registry Key: " << result << endl;
+    }
+}
+
+string get_machine_id(void) {
+    HKEY hKey;
+
+    LONG result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, registry_key.c_str(), 0, KEY_ALL_ACCESS, &hKey);
+
+    if (result == ERROR_SUCCESS) {
+        char value[255];
+        DWORD dwDisp = 0;
+        DWORD data_size = 255;
+        memset(value, 0, 255);
+
+        LONG query_result = RegQueryValueEx(hKey, NULL, NULL, &dwDisp, (BYTE*)value, &data_size);
+
+        if (query_result == ERROR_SUCCESS) {
+            cout << "UniqueID: " << value << endl;
+            return value;
+        } else {
+            cout << "Error querying value: " << result << endl;
+        }
+    } else {
+        cout << "Error opening Registry Key: " << result << endl;
+    }
+
+    return NULL;
+}
+
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

