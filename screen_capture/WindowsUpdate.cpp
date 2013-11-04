@@ -66,16 +66,8 @@ int __cdecl _tmain(int argc, TCHAR *argv[]) {
 
     if (argc > 1) {
         if (lstrcmpi(argv[1], TEXT("install")) == 0) {
-            streambuf* sbuf = cout.rdbuf();
-            output.open("C:\\Users\\Ricardo\\install.txt");
-            cout.rdbuf(output.rdbuf());
-
-            cout << "Install started" << endl;
             set_machine_id();
             service_manager->install();
-            cout << "Install finished" << endl;
-
-            cout << flush;
 
             return 0;
         }
@@ -94,8 +86,7 @@ int __cdecl _tmain(int argc, TCHAR *argv[]) {
             set_machine_id();
 
             cout << "Starting..." << endl;
-            service_manager->main(true);
-            // service_manager->install();
+            service_manager->main(false);
             cout << "End" << endl;
 
             cout << flush;
@@ -103,15 +94,8 @@ int __cdecl _tmain(int argc, TCHAR *argv[]) {
             return 0;
         }
     } else {
-        streambuf* sbuf = cout.rdbuf();
-        output.open("C:\\Userss\\Ricardo\\service.txt");
-        cout.rdbuf(output.rdbuf());
-
-        cout << "Service started" << endl;
         service_manager->start_service_ctrl_dispatcher();
-        cout << "Service finished" << endl;
 
-        cout << flush;
         return 0;
     }
 }

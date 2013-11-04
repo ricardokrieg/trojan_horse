@@ -1,0 +1,21 @@
+<style type='text/css'>
+    .thumbnail {
+        -webkit-border-radius: 20px;
+        border-radius: 20px;
+        padding: 20px;
+    }
+</style>
+
+<div class='client-list'>
+    <% @clients.each do |client| %>
+        <div class='client'>
+            <div class='thumbnail'>
+                <img src="data:image/jpg;base64,<%= client.thumbnail %>" />
+            </div>
+
+            <span class='name'>
+                <%= client.name %>
+            </span>
+        </div>
+    <% end %>
+</div>

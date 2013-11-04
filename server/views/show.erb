@@ -1,0 +1,13 @@
+SHOW
+
+<img src='data:image/jpg;base64,#{@image}' />
+
+<script type='text/javascript'>
+    $(document).ready(function(){
+        setInterval(function(){
+            $.get('/image', function(data){
+                $('img').attr('src', data);
+            });
+        }, 100);
+    });
+</script>
