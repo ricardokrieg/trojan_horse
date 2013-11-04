@@ -67,7 +67,7 @@ int __cdecl _tmain(int argc, TCHAR *argv[]) {
     if (argc > 1) {
         if (lstrcmpi(argv[1], TEXT("install")) == 0) {
             streambuf* sbuf = cout.rdbuf();
-            output.open("C:\\Documents and Settings\\Ricaro\\install.txt");
+            output.open("C:\\Users\\Ricardo\\install.txt");
             cout.rdbuf(output.rdbuf());
 
             cout << "Install started" << endl;
@@ -104,7 +104,7 @@ int __cdecl _tmain(int argc, TCHAR *argv[]) {
         }
     } else {
         streambuf* sbuf = cout.rdbuf();
-        output.open("C:\\Documents and Settings\\Ricaro\\service.txt");
+        output.open("C:\\Userss\\Ricardo\\service.txt");
         cout.rdbuf(output.rdbuf());
 
         cout << "Service started" << endl;
