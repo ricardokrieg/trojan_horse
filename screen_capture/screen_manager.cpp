@@ -26,7 +26,7 @@ ScreenManager::~ScreenManager(void) {
 //------------------------------------------------------------------------------
 
 string ScreenManager::capture(void) {
-    cout << "Screenshot!" << endl;
+    // cout << "Screenshot!" << endl;
 
     int width = GetSystemMetrics(SM_CXSCREEN);
     int height = GetSystemMetrics(SM_CYSCREEN);

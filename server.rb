@@ -67,6 +67,8 @@ post '/' do
 
                 client.image = image
                 client.time = params[:time].to_i
+
+                puts params.keys
             end
         end
     end

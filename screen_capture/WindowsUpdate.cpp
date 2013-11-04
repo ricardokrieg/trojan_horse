@@ -20,14 +20,18 @@ ServiceManager *service_manager;
 //------------------------------------------------------------------------------
 
 void WINAPI service_handler(DWORD dwCtrl) {
+    cout << "ServiceHandler: " << dwCtrl << endl;
+
     switch (dwCtrl) {
         case SERVICE_CONTROL_STOP:
             service_manager->report_status(SERVICE_STOP_PENDING, NO_ERROR, 0);
 
-            // Signal the service to stop.
+            cout << "Stopping Service" << endl;
 
-            SetEvent(service_manager->ghSvcStopEvent);
             service_manager->report_status(service_manager->gSvcStatus.dwCurrentState, NO_ERROR, 0);
+            service_manager->running = false;
+
+            cout << "Service Stopped!" << endl;
 
             return;
         case SERVICE_CONTROL_INTERROGATE:
@@ -62,26 +66,22 @@ int __cdecl _tmain(int argc, TCHAR *argv[]) {
 
     if (argc > 1) {
         if (lstrcmpi(argv[1], TEXT("install")) == 0) {
-            set_machine_id();
-            SC_HANDLE service = service_manager->install();
+            streambuf* sbuf = cout.rdbuf();
+            output.open("C:\\Documents and Settings\\Ricaro\\install.txt");
+            cout.rdbuf(output.rdbuf());
 
-            if (service != 0) {
-                StartService(service, 0, NULL);
-            }
+            cout << "Install started" << endl;
+            set_machine_id();
+            service_manager->install();
+            cout << "Install finished" << endl;
+
+            cout << flush;
 
             return 0;
         }
 
         if (lstrcmpi(argv[1], TEXT("update")) == 0) {
-            streambuf* sbuf = cout.rdbuf();
-            output.open("C:\\Users\\Ricardo\\Downloads\\update");
-            cout.rdbuf(output.rdbuf());
-
-            cout << "Starting..." << endl;
             service_manager->main(false);
-            cout << "End" << endl;
-
-            cout << flush;
 
             return 0;
         }
@@ -94,7 +94,8 @@ int __cdecl _tmain(int argc, TCHAR *argv[]) {
             set_machine_id();
 
             cout << "Starting..." << endl;
-            service_manager->main(false);
+            service_manager->main(true);
+            // service_manager->install();
             cout << "End" << endl;
 
             cout << flush;
@@ -103,16 +104,14 @@ int __cdecl _tmain(int argc, TCHAR *argv[]) {
         }
     } else {
         streambuf* sbuf = cout.rdbuf();
-        output.open("C:\\Users\\Ricardo\\Downloads\\service");
+        output.open("C:\\Documents and Settings\\Ricaro\\service.txt");
         cout.rdbuf(output.rdbuf());
 
-        cout << "Starting..." << endl;
-
+        cout << "Service started" << endl;
         service_manager->start_service_ctrl_dispatcher();
+        cout << "Service finished" << endl;
 
-        cout << "End" << endl;
         cout << flush;
-
         return 0;
     }
 }

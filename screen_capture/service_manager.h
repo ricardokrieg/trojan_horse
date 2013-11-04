@@ -20,7 +20,7 @@ class ServiceManager {
         ~ServiceManager(void);
 
         void main(bool);
-        SC_HANDLE install(void);
+        int install(void);
         void copy(void);
         void start_service_ctrl_dispatcher(void);
         void init(DWORD, LPTSTR*);
@@ -31,6 +31,7 @@ class ServiceManager {
 
         void log(string, bool show_last_error=true);
 
+        bool running;
         string name;
         string path;
         string unique_id;

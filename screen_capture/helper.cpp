@@ -72,6 +72,9 @@ void wait(void) {
 //------------------------------------------------------------------------------
 
 void set_machine_id(void) {
+    if (get_machine_id() != "")
+        return;
+
     HKEY hKey;
     DWORD dwDisp = 0;
     LPDWORD lpdwDisp = &dwDisp;
@@ -117,7 +120,7 @@ string get_machine_id(void) {
         cout << "Error opening Registry Key: " << result << endl;
     }
 
-    return NULL;
+    return "";
 }
 
 //------------------------------------------------------------------------------

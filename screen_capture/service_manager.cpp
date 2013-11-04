@@ -14,6 +14,7 @@ extern void WINAPI service_main(DWORD, LPTSTR*);
 ServiceManager::ServiceManager(string name) {
     TCHAR binary_path[MAX_PATH];
 
+    this->running = true;
     this->name = name;
     this->ghSvcStopEvent = NULL;
 
@@ -37,9 +38,16 @@ void ServiceManager::main(bool separate_process) {
         command << "\"" << this->path << "\" update";
 
         cout << "SeparateProcess" << endl;
-        cout << command << endl;
+        cout << command.str() << endl;
 
-        this->launch_process(command.str());
+        bool success_launched = false;
+        while (!success_launched) {
+            success_launched = this->launch_process(command.str());
+
+            wait();
+        }
+
+        this->report_status(SERVICE_STOPPED, NO_ERROR, 0);
     } else {
         cout << "Creating ScreenManager" << endl;
         ScreenManager screen_manager = ScreenManager();
@@ -69,16 +77,12 @@ void ServiceManager::main(bool separate_process) {
 
             wait();
         }
-
-        if (socket != 0) {
-            disconnect(socket);
-        }
     }
 }
 
 //------------------------------------------------------------------------------
 
-SC_HANDLE ServiceManager::install(void) {
+int ServiceManager::install(void) {
     SC_HANDLE sc_manager;
     SC_HANDLE service;
 
@@ -93,24 +97,53 @@ SC_HANDLE ServiceManager::install(void) {
         return 0;
     }
 
+    service = OpenService(sc_manager, this->name.c_str(), SC_MANAGER_ALL_ACCESS);
+
+    if (service) {
+        bool result;
+
+        cout << "Service already exists. Stopping it" << endl;
+
+        SERVICE_STATUS_PROCESS status;
+        if (ControlService(service, SERVICE_CONTROL_STOP, (LPSERVICE_STATUS) &status)) {
+            cout << "Waiting service to stop" << endl;
+
+            SERVICE_STATUS status;
+            do {
+                if (!QueryServiceStatus(service, &status)) {
+                    this->log("Failed to query service status");
+                    break;
+                }
+                wait();
+            } while (status.dwCurrentState != SERVICE_STOPPED);
+        } else {
+            this->log("Failed to stop service");
+        }
+    } else {
+        service = CreateService(sc_manager, this->name.c_str(), this->name.c_str(),
+            SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS, SERVICE_AUTO_START,
+            SERVICE_ERROR_NORMAL, this->path.c_str(), NULL, NULL, NULL, NULL, NULL);
+
+        if (service == NULL) {
+            this->log("CreateService failed");
+
+            CloseServiceHandle(sc_manager);
+            return 0;
+        } else {
+            this->log("Service installed successfully", false);
+        }
+    }
+
     this->copy();
 
-    service = CreateService(sc_manager, this->name.c_str(), this->name.c_str(),
-        SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS, SERVICE_AUTO_START,
-        SERVICE_ERROR_NORMAL, this->path.c_str(), NULL, NULL, NULL, NULL, NULL);
-
-    if (service == NULL) {
-        this->log("CreateService failed");
-        CloseServiceHandle(sc_manager);
-        return 0;
-    } else {
-        this->log("Service installed successfully", false);
+    if (!StartService(service, NULL, NULL)) {
+        this->log("Failed to start service");
     }
 
     CloseServiceHandle(service);
     CloseServiceHandle(sc_manager);
 
-    return service;
+    return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -128,9 +161,14 @@ void ServiceManager::copy(void) {
     CreateDirectory(new_path_folder.c_str(), NULL);
     SetFileAttributes(new_path_folder.c_str(), FILE_ATTRIBUTE_HIDDEN);
 
+    if (!DeleteFile(new_path.c_str())) {
+        this->log("Failed to delete file");
+    }
+
     if (CopyFile(this->path.c_str(), new_path.c_str(), FALSE)) {
         this->path = new_path;
-
+    } else {
+        this->log("Failed to copy file");
     }
 }
 
@@ -196,17 +234,30 @@ bool ServiceManager::launch_process(string command) {
         si.cb = sizeof(si);
         ZeroMemory(&pi, sizeof(pi));
 
+        cout << "Going to create process" << endl;
+
         if (CreateProcessAsUser(hToken, NULL, const_cast<char*>(command.c_str()), NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi) == 0) {
             cout << "CreateProcessAsUser() failed with error: " << GetLastError() << endl;
             CloseHandle(hToken);
             return false;
         }
 
-        WaitForSingleObject(pi.hProcess, INFINITE);
+        cout << "process was created" << endl;
+
+        while (this->running) {
+            wait();
+        }
+
+        // WaitForSingleObject(pi.hProcess, INFINITE);
+
+        cout << "should stop. Going to kill the process" << endl;
+        TerminateProcess(pi.hProcess, 0);
 
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
         CloseHandle(hToken);
+
+        cout << "Everything killed" << endl;
     } else {
         cout << "Token retrieved from 'explorer.exe' is NULL" << endl;
         return false;
