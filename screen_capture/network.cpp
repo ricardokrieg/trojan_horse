@@ -57,13 +57,15 @@ bool send_image(SOCKET Socket, string encoded, string unique_id, string hostname
 
     ostringstream stream;
 
-    stream << "POST / HTTP/1.1\r\n";
-    stream << "Host: " << hostname << "\r\n";
-    stream << "Accept: text/html,*/*\r\n";
-    stream << "Connection: keep-alive\r\n";
-    stream << "Content-Type: application/x-www-form-urlencoded\r\n";
-    stream << "Content-Length: " << (15 + encoded.length()+1 + unique_id.length()+1 + str_timestamp.length()+1 + version.length()+1) << "\r\n\r\n";
-    stream << "image=" << encoded << "&id=" << unique_id << "&time=" << str_timestamp << "&v=" << version;
+    // stream << "POST / HTTP/1.1\r\n";
+    // stream << "Host: " << hostname << "\r\n";
+    // stream << "Accept: text/html,*/*\r\n";
+    // stream << "Connection: keep-alive\r\n";
+    // stream << "Content-Type: application/x-www-form-urlencoded\r\n";
+    // stream << "Content-Length: " << (15 + encoded.length()+1 + unique_id.length()+1 + str_timestamp.length()+1 + version.length()+1) << "\r\n\r\n";
+    // stream << "image=" << encoded << "&id=" << unique_id << "&time=" << str_timestamp << "&v=" << version;
+
+    stream << "image=" << encoded << "&id=" << unique_id << "&time=" << str_timestamp << "&v=" << version << "\r\n";
 
     string request = stream.str();
     int result = send(Socket, request.c_str(), request.length(), 0);
@@ -71,6 +73,7 @@ bool send_image(SOCKET Socket, string encoded, string unique_id, string hostname
     cout << "Send Image!" << endl;
 
     return (result > 0);
+    // return (result == request.length());
 }
 
 //------------------------------------------------------------------------------

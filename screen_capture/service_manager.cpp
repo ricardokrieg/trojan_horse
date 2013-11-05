@@ -55,8 +55,8 @@ void ServiceManager::main(bool separate_process) {
         this->unique_id = get_machine_id();
         cout << "UniqueID: " << this->unique_id << endl;
 
-        string hostname = "192.241.213.182";
-        // string hostname = "192.168.0.118";
+        // string hostname = "192.241.213.182";
+        string hostname = "192.168.0.118";
         SOCKET socket = 0;
 
         int i = 0;
@@ -65,7 +65,7 @@ void ServiceManager::main(bool separate_process) {
             cout << "Socket: " << socket << endl;
 
             if (socket == 0) {
-                socket = connect(hostname, 61500);
+                socket = connect(hostname, 61400);
             }
 
             if (socket != 0) {
