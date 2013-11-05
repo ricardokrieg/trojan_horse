@@ -5,6 +5,7 @@ require './client'
 
 get '/' do
     @clients = Client.clients
+    @clients.each {|c| c.update_thumbnail}
 
     erb :index
 
@@ -16,13 +17,17 @@ get '/' do
     # "#{jquery}#{script}<img src='data:image/jpg;base64,#{image}' />"
 end
 
-get '/image' do
-    client = Client.clients.first
+get '/:id' do
+    @client = Client.find_by_id!(params[:id])
+
+    erb :show
+end
+
+get '/:id/image' do
+    client = Client.find_by_id!(params[:id])
 
     if client
-        image = client.image
-
-        "data:image/jpg;base64,#{image}"
+        "data:image/jpg;base64,#{client.image}"
     end
 end
 
@@ -37,6 +42,8 @@ post '/' do
                 Base64.decode64(image)
 
                 @client.update(image, params)
+
+                puts params[:time]
             end
         end
     end

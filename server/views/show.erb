@@ -1,11 +1,9 @@
-SHOW
-
-<img src='data:image/jpg;base64,#{@image}' />
+<img src="data:image/jpg;base64,<%= @client.image %>" />
 
 <script type='text/javascript'>
     $(document).ready(function(){
         setInterval(function(){
-            $.get('/image', function(data){
+            $.get("<%= @client.id %>/image", function(data){
                 $('img').attr('src', data);
             });
         }, 100);

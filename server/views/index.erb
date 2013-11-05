@@ -1,4 +1,8 @@
 <style type='text/css'>
+    .client {
+        float: left;
+    }
+
     .thumbnail {
         -webkit-border-radius: 20px;
         border-radius: 20px;
@@ -14,7 +18,12 @@
             </div>
 
             <span class='name'>
-                <%= client.name %>
+                <a href='/<%= client.id %>'><%= client.name %></a>
+            </span>
+
+            <span class='activity'>
+                <b>Last Activity: </b>
+                <%= client.last_activity %>
             </span>
         </div>
     <% end %>

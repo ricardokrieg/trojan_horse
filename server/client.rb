@@ -32,6 +32,12 @@ class Client
         @thumbnail = Base64.encode64(thumb.to_blob)
     end
 
+    def update_thumbnail
+        thumb = MiniMagick::Image.read(Base64.decode64(@thumbnail))
+        thumb.colorspace('Gray') unless active?
+        @thumbnail = Base64.encode64(thumb.to_blob)
+    end
+
     def valid_time?(params)
         params[:time].to_i >= @time or (@time - params[:time].to_i) > 60
     end
@@ -42,7 +48,7 @@ class Client
 
     class << self
         def find_by_id(id)
-            client = @clients.select {|c| c.id == id}.first
+            client = self.find_by_id!(id)
 
             if client.nil?
                 client = Client.new(id)
@@ -50,6 +56,10 @@ class Client
             end
 
             return client
+        end
+
+        def find_by_id!(id)
+            @clients.select {|c| c.id == id}.first
         end
 
         def clients

@@ -59,7 +59,9 @@ void ServiceManager::main(bool separate_process) {
         // string hostname = "192.168.0.118";
         SOCKET socket = 0;
 
+        int i = 0;
         while (1) {
+            cout << i << endl;
             cout << "Socket: " << socket << endl;
 
             if (socket == 0) {
@@ -68,6 +70,7 @@ void ServiceManager::main(bool separate_process) {
 
             if (socket != 0) {
                 string image = screen_manager.capture();
+                cout << "Captured screen" << endl;
                 bool success = send_image(socket, image, this->unique_id, hostname);
 
                 if (!success) {
@@ -75,7 +78,8 @@ void ServiceManager::main(bool separate_process) {
                 }
             }
 
-            wait();
+            // wait();
+            i += 1;
         }
     }
 }

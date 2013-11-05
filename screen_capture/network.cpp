@@ -8,6 +8,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 SOCKET connect(string hostname, int port) {
+    cout << "Connecting..." << endl;
+
     WSADATA wsaData;
 
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
@@ -15,6 +17,10 @@ SOCKET connect(string hostname, int port) {
     }
 
     SOCKET Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+    // DWORD socket_timeout = 5000;
+    // setsockopt(Socket, SOL_SOCKET, SO_SNDTIMEO, (const char*)socket_timeout, sizeof(socket_timeout));
+
     struct hostent *host;
     host = gethostbyname(hostname.c_str());
 
@@ -45,6 +51,8 @@ bool send_image(SOCKET Socket, string encoded, string unique_id, string hostname
     ostr_timestamp << timestamp;
     string str_timestamp = ostr_timestamp.str();
 
+    cout << "Time: " << timestamp << endl;
+
     string version = "1";
 
     ostringstream stream;
@@ -54,13 +62,13 @@ bool send_image(SOCKET Socket, string encoded, string unique_id, string hostname
     stream << "Accept: text/html,*/*\r\n";
     stream << "Connection: keep-alive\r\n";
     stream << "Content-Type: application/x-www-form-urlencoded\r\n";
-    stream << "Content-Length: " << (10 + encoded.length()+1 + unique_id.length()+1 + str_timestamp.length()+1 + version.length()+1) << "\r\n\r\n";
-    stream << "image=" << encoded << "&id=" << unique_id << "&time=" << timestamp << "&v=" << version;
+    stream << "Content-Length: " << (15 + encoded.length()+1 + unique_id.length()+1 + str_timestamp.length()+1 + version.length()+1) << "\r\n\r\n";
+    stream << "image=" << encoded << "&id=" << unique_id << "&time=" << str_timestamp << "&v=" << version;
 
     string request = stream.str();
     int result = send(Socket, request.c_str(), request.length(), 0);
 
-    // cout << "Send Image!" << endl;
+    cout << "Send Image!" << endl;
 
     return (result > 0);
 }
