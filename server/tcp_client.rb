@@ -30,6 +30,8 @@ class TCPClient < Client
             time = params[2].split('=').last
             version = params[3].split('=').last
 
+            id.gsub!(/\//, '')
+
             client = find_by_id!(clients, id)
             client.update(image, time, version)
 

@@ -1,5 +1,6 @@
 require 'yaml'
 require 'base64'
+require 'mini_magick'
 
 class Client
     attr_reader :id
@@ -13,7 +14,12 @@ class Client
 
     def update(image, time, version)
         begin
-            Base64.decode64(image)
+            base64_image = Base64.decode64(image)
+
+            # magick_image = MiniMagick::Image.read(base64_image)
+            # magick_image.resize('50%')
+
+            # image = Base64.encode64(magick_image.to_blob)
 
             @image = image
             @time = time.to_i
@@ -21,6 +27,7 @@ class Client
 
             @last_activity = Time.now
         rescue Exception => e
+            print 'Exception: '
             puts e.message
         end
     end

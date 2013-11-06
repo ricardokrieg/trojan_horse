@@ -2,36 +2,41 @@ require 'socket'
 
 require './tcp_client'
 
-Thread.abort_on_exception=true
+Thread.abort_on_exception = true
 
-tcp_server = TCPServer.new 61400
-http_server = TCPServer.new 61401
+$tcp_server = TCPServer.new 61400
+$http_server = TCPServer.new 61401
 
 $clients = []
 
 Thread.start do
-    puts 'Waiting HTTP Server...'
+    loop do
+        puts 'Waiting HTTP Server...'
 
-    http_connection = http_server.accept
+        http_connection = $http_server.accept
 
-    puts 'Connected to HTTP Server'
+        puts 'Connected to HTTP Server'
 
-    while id = http_connection.gets
-        if id == "0\n"
-            to_send = TCPClient.clients_to_send($clients)
-        else
-            to_send = TCPClient.client_to_send($clients, id[0..-2])
+        while message = http_connection.gets
+            if message == "ping\n"
+                to_send = "pong\n"
+            elsif message == "all\n"
+                to_send = TCPClient.clients_to_send($clients)
+            else
+                id = message[0..-2]
+                to_send = TCPClient.client_to_send($clients, id)
+            end
+
+            http_connection.puts to_send
         end
 
-        http_connection.puts to_send
+        puts 'Closing HTTP connection'
     end
-
-    puts 'Closing HTTP connection'
 end
 
 loop do
     puts 'Waiting Client...'
-    Thread.start(tcp_server.accept) do |tcp_connection|
+    Thread.start($tcp_server.accept) do |tcp_connection|
         puts 'Connected to Client'
 
         last_message = Time.now

