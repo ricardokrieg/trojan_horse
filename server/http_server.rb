@@ -21,19 +21,22 @@ get '/' do
 
     @clients = HTTPClient.multiple_from_send(response)
 
-    # begin
-    #     c = clients.first
-    #     i = Base64.urlsafe_decode64(c.image)
-    #     i = Base64.encode64(i)
-    #     c.image = i
-    # rescue
-    # end
-
     erb :index
 end
 
+get '/favicon.ico' do
+end
+
 get '/:id' do
-    @client = HTTPClient.find_by_id!(params[:id])
+    @@tcp_server.puts params[:id]
+    response = ''
+    while line = @@tcp_server.gets
+        break if line == "<end>\n"
+
+        response += line
+    end
+
+    @client = HTTPClient.from_send(response)
 
     if @client
         erb :show
@@ -41,7 +44,15 @@ get '/:id' do
 end
 
 get '/:id/image' do
-    @client = HTTPClient.find_by_id!(params[:id])
+    @@tcp_server.puts params[:id]
+    response = ''
+    while line = @@tcp_server.gets
+        break if line == "<end>\n"
+
+        response += line
+    end
+
+    @client = HTTPClient.from_send(response)
 
     if @client
         "data:image/jpg;base64,#{@client.image}"

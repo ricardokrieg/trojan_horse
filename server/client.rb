@@ -5,8 +5,6 @@ class Client
     attr_reader :id
     attr_accessor :image, :last_activity, :version
 
-    @@clients = []
-
     def initialize(id)
         @id = id
 
@@ -46,21 +44,19 @@ class Client
     end
 
     class << self
-        attr_reader :clients
+        def find_by_id(clients, id)
+            clients.select {|c| c.id == id}.first
+        end
 
-        def find_by_id(id)
-            client = self.find_by_id!(id)
+        def find_by_id!(clients, id)
+            client = find_by_id(clients, id)
 
             if client.nil?
-                client = Client.new(id)
-                @@clients << client
+                client = new(id)
+                clients << client
             end
 
             return client
-        end
-
-        def find_by_id!(id)
-            @@clients.select {|c| c.id == id}.first
         end
     end
 end

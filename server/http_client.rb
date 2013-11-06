@@ -23,9 +23,9 @@ class HTTPClient < Client
         end
 
         def from_send(response)
-            params = YAML.load(response)
+            # params = YAML.load(response)
 
-            return client_from_send(params)
+            return client_from_send(response)
         end
 
         def multiple_from_send(response)

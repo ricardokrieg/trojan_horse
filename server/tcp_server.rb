@@ -7,6 +7,8 @@ Thread.abort_on_exception=true
 tcp_server = TCPServer.new 61400
 http_server = TCPServer.new 61401
 
+$clients = []
+
 Thread.start do
     puts 'Waiting HTTP Server...'
 
@@ -16,9 +18,9 @@ Thread.start do
 
     while id = http_connection.gets
         if id == "0\n"
-            to_send = TCPClient.clients_to_send
+            to_send = TCPClient.clients_to_send($clients)
         else
-            to_send = TCPClient.client_to_send(id)
+            to_send = TCPClient.client_to_send($clients, id[0..-2])
         end
 
         http_connection.puts to_send
@@ -35,7 +37,7 @@ loop do
         last_message = Time.now
 
         while message = tcp_connection.gets
-            TCPClient.parse_message(message)
+            TCPClient.parse_message($clients, message)
 
             puts "#{(Time.now - last_message).round(2)}s"
             last_message = Time.now

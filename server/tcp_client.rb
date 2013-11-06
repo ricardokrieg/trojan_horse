@@ -12,7 +12,7 @@ class TCPClient < Client
     end
 
     class << self
-        def parse_message(message)
+        def parse_message(clients, message)
             params = message.split('&')
 
             image = params[0].split('=').last
@@ -20,19 +20,21 @@ class TCPClient < Client
             time = params[2].split('=').last
             version = params[3].split('=').last
 
-            client = find_by_id(id)
+            client = find_by_id!(clients, id)
             client.update(image, time, version)
+
+            puts time
         end
 
-        def clients_to_send
-            message = @@clients.map {|client| client.to_send}.to_yaml
+        def clients_to_send(clients)
+            message = clients.map {|client| client.to_send}.to_yaml
             message += "<end>\n"
 
             return message
         end
 
-        def client_to_send(id)
-            client = find_by_id!(id)
+        def client_to_send(clients, id)
+            client = find_by_id(clients, id)
 
             if client
                 message = client.to_send
