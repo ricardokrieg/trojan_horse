@@ -16,11 +16,6 @@ class Client
         begin
             base64_image = Base64.decode64(image)
 
-            # magick_image = MiniMagick::Image.read(base64_image)
-            # magick_image.resize('50%')
-
-            # image = Base64.encode64(magick_image.to_blob)
-
             @image = image
             @time = time.to_i
             @version = version
@@ -43,7 +38,7 @@ class Client
     end
 
     def active?
-        !@last_activity.nil? and (Time.now - @last_activity).to_i < 60
+        (Time.now - @last_activity).to_i < 30
     end
 
     def to_send
@@ -51,6 +46,12 @@ class Client
     end
 
     class << self
+        def destroy!(clients, id)
+            client = find_by_id(clients, id)
+
+            clients.delete(client)
+        end
+
         def find_by_id(clients, id)
             clients.select {|c| c.id == id}.first
         end

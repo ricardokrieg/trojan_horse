@@ -3,7 +3,7 @@ require 'socket'
 
 require './http_client'
 
-Thread.abort_on_exception = true
+# Thread.abort_on_exception = true
 $semaphore = Mutex.new
 
 $tcp_server = nil
@@ -78,8 +78,10 @@ get '/:id' do
 
     @client = HTTPClient.from_send(tcp_response)
 
-    if @client
+    if @client and @client.active?
         erb :show
+    else
+        redirect '/'
     end
 end
 
@@ -89,6 +91,22 @@ get '/:id/image' do
     @client = HTTPClient.from_send(tcp_response)
 
     if @client
-        "data:image/jpg;base64,#{@client.image}"
+        if @client.active?
+            "data:image/jpg;base64,#{@client.image}"
+        else
+            'redirect'
+        end
     end
+end
+
+get '/:id/destroy' do
+    tcp_response = connect(params[:id])
+
+    @client = HTTPClient.from_send(tcp_response)
+
+    if @client and not @client.active?
+        connect("DESTROY:#{@client.id}")
+    end
+
+    redirect '/'
 end

@@ -1,6 +1,38 @@
-<img src="data:image/jpg;base64,<%= @client.image %>" />
+<style type='text/css'>
+    #client {
+        text-align: center;
+    }
 
-<div id='time'></div>
+    #time {
+        color: white;
+        text-align: right;
+    }
+
+    .img-container {
+        -webkit-border-radius: 8px;
+        border-radius: 8px;
+        padding: 8px;
+        background: #999;
+        display: inline-block;
+    }
+
+    a {
+        display: block;
+        margin-top: 40px;
+    }
+</style>
+
+<div id='client'>
+    <div id='time'></div>
+
+    <div class='img-container'>
+        <img src="data:image/jpg;base64,<%= @client.image %>" class='img-responsive' />
+    </div>
+
+    <br>
+
+    <a href='/' class='btn btn-lg btn-primary'>Back to home</a>
+</div>
 
 <script type='text/javascript'>
     $(document).ready(function(){
@@ -12,12 +44,16 @@
                 update = false;
 
                 $.get("<%= @client.id %>/image", function(data){
-                    $('img').attr('src', data);
+                    if (data == 'redirect') {
+                        document.location = '/';
+                    } else {
+                        $('img').attr('src', data);
 
-                    $('#time').html(($.now() - last_time)/1000 + 's');
-                    last_time = $.now();
+                        $('#time').html(($.now() - last_time)/1000 + 's');
+                        last_time = $.now();
 
-                    update = true;
+                        update = true;
+                    }
                 });
             }
         }, 50);

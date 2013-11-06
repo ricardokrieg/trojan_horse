@@ -1,30 +1,78 @@
 <style type='text/css'>
-    .client {
-        float: left;
+    .no-clients {
+        text-align: center;
+        font-size: 48px;
+        color: white;
+        text-shadow: 2px 2px 2px black;
+        filter: dropshadow(color=black, offx=2, offy=2);
+        margin-top: 200px;
+    }
+    .refresh {
+        margin-top: 40px;
     }
 
-    .thumbnail {
-        -webkit-border-radius: 20px;
-        border-radius: 20px;
-        padding: 20px;
+    .client {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .client-thumbnail {
+        -webkit-border-radius: 8px;
+        border-radius: 8px;
+        padding: 8px;
+        background: #468847;
+        display: inline-block;
+    }
+    .client-thumbnail.inactive {
+        background: #b94a48;
+    }
+
+    .name {
+        color: white;
+        text-shadow: 2px 2px 2px #333;
+        filter: dropshadow(color=#333, offx=2, offy=2);
+        margin: 10px;
+        font-size: 20px;
     }
 </style>
 
-<div class='client-list'>
-    <% @clients.each do |client| %>
-        <div class='client'>
-            <div class='thumbnail'>
-                <img src="data:image/jpg;base64,<%= client.thumbnail %>" />
-            </div>
+<% if @clients.any? %>
+    <div class='client-list'>
+        <div class='row'>
+            <% @clients.each_with_index do |client, index| %>
+                <div class='col-xs-12 col-md-6'>
+                    <div class='client'>
+                        <div class='client-thumbnail <%= 'inactive' unless client.active? %>'>
+                            <img src="data:image/jpg;base64,<%= client.thumbnail %>" />
+                        </div>
 
-            <span class='name'>
-                <a href='/<%= client.id %>'><%= client.name %></a>
-            </span>
+                        <div class='client-name'>
+                            <div class='name'>Client #<%= index+1 %></div>
 
-            <span class='activity'>
-                <b>Last Activity: </b>
-                <%= client.last_activity %>
-            </span>
+                            <% if client.active? %>
+                                <div class='look'>
+                                    <a href='/<%= client.id %>' class='btn btn-lg btn-primary'>Look</a>
+                                </div>
+                            <% else %>
+                                <div class='activity text-warning'>
+                                    <b>Last Activity: </b>
+                                    <%= client.last_activity %>
+                                </div>
+
+                                <div class='destroy'>
+                                    <a href='/<%= client.id %>/destroy' class='btn btn-danger'>Remove</a>
+                                </div>
+                            <% end %>
+                        </div>
+                    </div>
+                </div>
+            <% end %>
         </div>
-    <% end %>
+    </div>
+<% else %>
+    <div class='no-clients'>No clients</div>
+<% end %>
+
+<div class='refresh text-center'>
+    <a href='javascript:location.reload()' class='btn btn-lg btn-primary'>Refresh</a>
 </div>

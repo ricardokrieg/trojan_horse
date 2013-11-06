@@ -2,7 +2,7 @@ require 'socket'
 
 require './tcp_client'
 
-Thread.abort_on_exception = true
+# Thread.abort_on_exception = true
 
 $tcp_server = TCPServer.new 61400
 $http_server = TCPServer.new 61401
@@ -22,6 +22,12 @@ Thread.start do
                 to_send = "pong\n"
             elsif message == "all\n"
                 to_send = TCPClient.clients_to_send($clients)
+            elsif message.start_with?("DESTROY:")
+                id = message[8..-2]
+                puts "Destroy: #{id}"
+
+                TCPClient.destroy!($clients, id)
+                to_send = "<end>\n"
             else
                 id = message[0..-2]
                 to_send = TCPClient.client_to_send($clients, id)
