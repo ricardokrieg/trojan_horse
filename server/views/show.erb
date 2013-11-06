@@ -1,11 +1,25 @@
 <img src="data:image/jpg;base64,<%= @client.image %>" />
 
+<div id='time'></div>
+
 <script type='text/javascript'>
     $(document).ready(function(){
+        last_time = $.now();
+        update = true;
+
         setInterval(function(){
-            $.get("<%= @client.id %>/image", function(data){
-                $('img').attr('src', data);
-            });
-        }, 100);
+            if (update) {
+                update = false;
+
+                $.get("<%= @client.id %>/image", function(data){
+                    $('img').attr('src', data);
+
+                    $('#time').html(($.now() - last_time)/1000 + 's');
+                    last_time = $.now();
+
+                    update = true;
+                });
+            }
+        }, 50);
     });
 </script>

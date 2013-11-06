@@ -15,6 +15,16 @@ class TCPClient < Client
         def parse_message(clients, message)
             params = message.split('&')
 
+            # puts '--------------------'
+            # puts params[0]
+            # puts '--------------------'
+            # puts params[1]
+            # puts '--------------------'
+            # puts params[2]
+            # puts '--------------------'
+            # puts params[3]
+            # puts '--------------------'
+
             image = params[0].split('=').last
             id = params[1].split('=').last
             time = params[2].split('=').last
