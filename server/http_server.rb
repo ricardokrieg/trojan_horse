@@ -2,6 +2,7 @@ require 'sinatra'
 require 'base64'
 require 'socket'
 require 'mini_magick'
+require 'debugger'
 
 require './http_client'
 
@@ -11,7 +12,12 @@ end
 
 get '/' do
     @@tcp_server.puts '0'
-    response = @@tcp_server.gets
+    response = ''
+    while line = @@tcp_server.gets
+        break if line == "<end>\n"
+
+        response += line
+    end
 
     @clients = HTTPClient.multiple_from_send(response)
 

@@ -1,4 +1,5 @@
 require 'yaml'
+require 'debugger'
 
 require './client'
 
@@ -39,6 +40,8 @@ class HTTPClient < Client
 
         private
             def client_from_send(params)
+                params = YAML.load(params)
+
                 client = self.new(params[:id])
 
                 client.image = params[:image]

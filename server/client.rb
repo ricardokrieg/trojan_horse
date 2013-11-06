@@ -1,8 +1,11 @@
+require 'yaml'
+require 'base64'
+
 class Client
     attr_reader :id
     attr_accessor :image, :last_activity, :version
 
-    @clients = []
+    @@clients = []
 
     def initialize(id)
         @id = id
@@ -11,11 +14,17 @@ class Client
     end
 
     def update(image, time, version)
-        @image = image
-        @time = time.to_i
-        @version = version
+        begin
+            Base64.decode64(image)
 
-        @last_activity = Time.now
+            @image = image
+            @time = time.to_i
+            @version = version
+
+            @last_activity = Time.now
+        rescue Exception => e
+            puts e.message
+        end
     end
 
     def thumbnail
@@ -32,6 +41,10 @@ class Client
         !@last_activity.nil? and (Time.now - @last_activity).to_i < 60
     end
 
+    def to_send
+        {id: @id, image: @image, last_activity: @last_activity}.to_yaml
+    end
+
     class << self
         attr_reader :clients
 
@@ -40,14 +53,14 @@ class Client
 
             if client.nil?
                 client = Client.new(id)
-                @clients << client
+                @@clients << client
             end
 
             return client
         end
 
         def find_by_id!(id)
-            @clients.select {|c| c.id == id}.first
+            @@clients.select {|c| c.id == id}.first
         end
     end
 end

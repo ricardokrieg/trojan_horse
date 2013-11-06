@@ -1,4 +1,4 @@
-require 'yaml'
+require 'debugger'
 
 require './client'
 
@@ -9,10 +9,6 @@ class TCPClient < Client
         time = time.to_i
 
         time >= @time or (@time - time) > 60
-    end
-
-    def to_send
-        {id: @id, image: @image, last_activity: @last_activity}.to_yaml
     end
 
     class << self
@@ -26,21 +22,25 @@ class TCPClient < Client
 
             client = find_by_id(id)
             client.update(image, time, version)
-
-            # base64_image = Base64.urlsafe_decode64(image)
         end
 
         def clients_to_send
-            @clients.map {|client| client.to_send}.to_yaml
+            message = @@clients.map {|client| client.to_send}.to_yaml
+            message += "<end>\n"
+
+            return message
         end
 
         def client_to_send(id)
             client = find_by_id!(id)
 
             if client
-                client.to_send
+                message = client.to_send
+                message += "<end>\n"
+
+                message
             else
-                nil
+                "<end>\n"
             end
         end
     end

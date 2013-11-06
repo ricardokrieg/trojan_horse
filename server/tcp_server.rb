@@ -2,6 +2,8 @@ require 'socket'
 
 require './tcp_client'
 
+Thread.abort_on_exception=true
+
 tcp_server = TCPServer.new 61400
 http_server = TCPServer.new 61401
 

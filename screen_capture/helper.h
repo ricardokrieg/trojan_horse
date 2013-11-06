@@ -18,7 +18,7 @@ int GetEncoderClsid(const WCHAR*, CLSID*);
 static const string base64_chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz"
-    "0123456789-_";
+    "0123456789+/";
 
 string base64_encode(unsigned char const*, unsigned int);
 

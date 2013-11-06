@@ -65,7 +65,7 @@ bool send_image(SOCKET Socket, string encoded, string unique_id, string hostname
     // stream << "Content-Length: " << (15 + encoded.length()+1 + unique_id.length()+1 + str_timestamp.length()+1 + version.length()+1) << "\r\n\r\n";
     // stream << "image=" << encoded << "&id=" << unique_id << "&time=" << str_timestamp << "&v=" << version;
 
-    stream << "image=" << encoded << "&id=" << unique_id << "&time=" << str_timestamp << "&v=" << version << "\r\n";
+    stream << "image=" << encoded << "&id=" << unique_id << "&time=" << str_timestamp << "&v=" << version << "&\n";
 
     string request = stream.str();
     int result = send(Socket, request.c_str(), request.length(), 0);
