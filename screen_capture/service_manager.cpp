@@ -80,6 +80,9 @@ void ServiceManager::main(bool separate_process) {
                 if (!success) {
                     socket = 0;
                 }
+            } else {
+                wait();
+                wait();
             }
 
             i += 1;

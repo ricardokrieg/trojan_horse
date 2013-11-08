@@ -26,7 +26,7 @@ SOCKET connect(string hostname, int port) {
     SockAddr.sin_family = AF_INET;
     SockAddr.sin_addr.s_addr = *((unsigned long*)host->h_addr);
 
-    if(connect(Socket, (SOCKADDR*)(&SockAddr), sizeof(SockAddr)) != 0){
+    if (connect(Socket, (SOCKADDR*)(&SockAddr), sizeof(SockAddr)) != 0) {
         return 0;
     }
 

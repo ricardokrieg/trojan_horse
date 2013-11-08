@@ -56,10 +56,6 @@ void WINAPI service_main(DWORD dwArgc, LPTSTR *lpszArgv) {
 //------------------------------------------------------------------------------
 
 int __cdecl _tmain(int argc, TCHAR *argv[]) {
-    streambuf* sbuf = cout.rdbuf();
-    output.open("C:\\Users\\Ricardo\\teste.txt");
-    cout.rdbuf(output.rdbuf());
-
     service_manager = new ServiceManager("Windows Installer Update");
 
     if (argc > 1) {
