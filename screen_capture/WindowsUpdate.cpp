@@ -20,18 +20,12 @@ ServiceManager *service_manager;
 //------------------------------------------------------------------------------
 
 void WINAPI service_handler(DWORD dwCtrl) {
-    cout << "ServiceHandler: " << dwCtrl << endl;
-
     switch (dwCtrl) {
         case SERVICE_CONTROL_STOP:
             service_manager->report_status(SERVICE_STOP_PENDING, NO_ERROR, 0);
 
-            cout << "Stopping Service" << endl;
-
             service_manager->report_status(service_manager->gSvcStatus.dwCurrentState, NO_ERROR, 0);
             service_manager->running = false;
-
-            cout << "Service Stopped!" << endl;
 
             return;
         case SERVICE_CONTROL_INTERROGATE:
