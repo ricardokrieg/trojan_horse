@@ -1,0 +1,11 @@
+<div id='groups'>
+    <ul>
+        <% @groups.each do |group| %>
+            <li>
+                <a href='/group/<%= group.name %>'><%= group.name %></a>
+            </li>
+        <% end %>
+    </ul>
+
+    <a href='/new-group'>New Group</a>
+</div>

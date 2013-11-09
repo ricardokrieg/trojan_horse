@@ -1,0 +1,40 @@
+body {
+    background: url(bg.png) repeat;
+    padding-top: 20px;
+}
+
+.no-clients {
+    text-align: center;
+    font-size: 48px;
+    color: white;
+    text-shadow: 2px 2px 2px black;
+    filter: dropshadow(color=black, offx=2, offy=2);
+    margin-top: 200px;
+}
+.refresh {
+    margin-top: 40px;
+}
+
+.client {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.client-thumbnail {
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+    padding: 8px;
+    background: #468847;
+    display: inline-block;
+}
+.client-thumbnail.inactive {
+    background: #b94a48;
+}
+
+.name {
+    color: white;
+    text-shadow: 2px 2px 2px #333;
+    filter: dropshadow(color=#333, offx=2, offy=2);
+    margin: 10px;
+    font-size: 20px;
+}

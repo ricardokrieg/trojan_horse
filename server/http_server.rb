@@ -3,17 +3,26 @@ require 'socket'
 require 'redis'
 
 require './client'
+require './group'
 
 $redis = Redis.new
 
-def find_client
-    @client = Client.find(params[:id])
+def find_object(klass)
+    @object = klass.find(params[:id])
 
-    if @client
-        return @client
+    if @object
+        return @object
     else
         redirect '/'
     end
+end
+
+def find_client
+    find_object(Client)
+end
+
+def find_group
+    find_object(Group)
 end
 
 get '/' do
@@ -25,6 +34,29 @@ end
 get '/favicon.ico' do
 end
 
+get '/groups' do
+    @groups = Group.all
+
+    erb :groups
+end
+
+get '/new-group' do
+    erb :new_group
+end
+
+get '/group/:id' do
+    @group = find_group
+
+    erb :group
+end
+
+post '/groups' do
+    @group = Group.new(params[:name])
+    @group.save
+
+    redirect '/groups'
+end
+
 get '/:id' do
     @client = find_client
 
@@ -32,15 +64,9 @@ get '/:id' do
 end
 
 get '/:id/image' do
-    @client = Client.find(params[:id])
+    @client = find_client
 
-    if @client
-        if @client.active?
-            "data:image/jpg;base64,#{@client.image}"
-        else
-            'redirect'
-        end
-    end
+    "data:image/jpg;base64,#{@client.image}"
 end
 
 get '/:id/destroy' do
