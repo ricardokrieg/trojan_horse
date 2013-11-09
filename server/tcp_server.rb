@@ -1,42 +1,48 @@
 require 'socket'
+require 'redis'
+require 'base64'
+require 'json'
 
-require './tcp_client'
+require './client'
 
 # Thread.abort_on_exception = true
 
 $tcp_server = TCPServer.new 61400
-$http_server = TCPServer.new 61401
+$redis = Redis.new
 
-$clients = []
+def recent?(id, time)
+    client = Client.find(id)
 
-Thread.start do
-    loop do
-        puts 'Waiting HTTP Server...'
+    if client
+        return client.recent?(time)
+    else
+        return true
+    end
+end
 
-        http_connection = $http_server.accept
+def parse_message(message)
+    params = message.split('&')
 
-        puts 'Connected to HTTP Server'
+    image = params[0].split('=').last
+    id = params[1].split('=').last
+    time = params[2].split('=').last
+    version = params[3].split('=').last
+    last_activity = Time.now
 
-        while message = http_connection.gets
-            if message == "ping\n"
-                to_send = "pong\n"
-            elsif message == "all\n"
-                to_send = TCPClient.clients_to_send($clients)
-            elsif message.start_with?("DESTROY:")
-                id = message[8..-2]
-                puts "Destroy: #{id}"
+    begin
+        Base64.decode64(image)
 
-                TCPClient.destroy!($clients, id)
-                to_send = "<end>\n"
-            else
-                id = message[0..-2]
-                to_send = TCPClient.client_to_send($clients, id)
-            end
+        id.gsub!(/\//, '')
+        time = time.to_i
 
-            http_connection.puts to_send
+        if recent?(id, time)
+            to_redis = {image: image, time: time, version: version, last_activity: last_activity}.to_json
+
+            $redis.set(id, to_redis)
         end
-
-        puts 'Closing HTTP connection'
+    rescue Exception => e
+        print 'Exception: '
+        puts e.message
     end
 end
 
@@ -48,7 +54,7 @@ loop do
         last_message = Time.now
 
         while message = tcp_connection.gets
-            TCPClient.parse_message($clients, message)
+            parse_message(message)
 
             puts "#{(Time.now - last_message).round(2)}s"
             last_message = Time.now

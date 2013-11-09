@@ -1,30 +1,39 @@
-require 'yaml'
 require 'base64'
 require 'mini_magick'
+require 'json'
+require 'time'
 
 class Client
     attr_reader :id
     attr_accessor :image, :last_activity, :version
 
-    def initialize(id)
+    def initialize(id, redis_attrs)
         @id = id
 
-        update(nil, -1, 0)
-    end
-
-    def update(image, time, version)
         begin
-            base64_image = Base64.decode64(image)
+            attrs = JSON.parse(redis_attrs)
 
-            @image = image
-            @time = time.to_i
-            @version = version
+            image = attrs['image']
+            Base64.decode64(image)
 
-            @last_activity = Time.now
+            @time = attrs['time'].to_i
+            @image = attrs['image']
+            @version = attrs['version']
+            @last_activity = Time.parse(attrs['last_activity'])
         rescue Exception => e
+            @id = nil
+
             print 'Exception: '
             puts e.message
         end
+    end
+
+    def recent?(time)
+        time >= @time or (@time - time) > 60
+    end
+
+    def active?
+        (Time.now - @last_activity).to_i < 30
     end
 
     def thumbnail
@@ -37,34 +46,36 @@ class Client
         Base64.encode64(image.to_blob)
     end
 
-    def active?
-        (Time.now - @last_activity).to_i < 30
-    end
 
-    def to_send
-        {id: @id, image: @image, last_activity: @last_activity}.to_yaml
+    def destroy
+        $redis.del(@id)
     end
 
     class << self
-        def destroy!(clients, id)
-            client = find_by_id(clients, id)
+        def all
+            clients = []
 
-            clients.delete(client)
-        end
-
-        def find_by_id(clients, id)
-            clients.select {|c| c.id == id}.first
-        end
-
-        def find_by_id!(clients, id)
-            client = find_by_id(clients, id)
-
-            if client.nil?
-                client = new(id)
-                clients << client
+            $redis.keys.each do |id|
+                if client = find(id)
+                    clients << client
+                end
             end
 
-            return client
+            return clients
+        end
+
+        def find(id)
+            if client = $redis.get(id)
+                client = new(id, client)
+
+                if client.id.nil?
+                    return nil
+                else
+                    return client
+                end
+            else
+                return nil
+            end
         end
     end
 end
