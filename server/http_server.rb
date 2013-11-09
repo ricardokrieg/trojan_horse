@@ -46,3 +46,13 @@ get '/:id/destroy' do
 
     redirect '/'
 end
+
+get '/:id/manage' do
+    @client = Client.find(params[:id])
+
+    if @client
+        erb :manage
+    else
+        redirect '/'
+    end
+end
