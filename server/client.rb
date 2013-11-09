@@ -5,7 +5,7 @@ require 'time'
 
 class Client
     attr_reader :id
-    attr_accessor :image, :last_activity, :version
+    attr_accessor :image, :last_activity, :version, :groups
 
     def initialize(id, redis_attrs)
         @id = id
@@ -20,12 +20,19 @@ class Client
             @image = attrs['image']
             @version = attrs['version']
             @last_activity = Time.parse(attrs['last_activity'])
+
+            @groups = attrs['groups']
+            @groups ||= []
         rescue Exception => e
             @id = nil
 
             print 'Exception: '
             puts e.message
         end
+    end
+
+    def save
+        $redis.set(@id, {groups: @groups}.to_json) == 'OK'
     end
 
     def recent?(time)
