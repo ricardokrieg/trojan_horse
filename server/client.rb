@@ -53,11 +53,17 @@ class Client < RedisObject
         [:name, @name, :image, @image, :last_activity, @last_activity.to_json, :time, @time, :version, @version, :groups, @groups.to_json]
     end
 
-    def display_name
+    def display_name(truncate=false)
         if @name != nil and @name != ''
-            @name
+            to_display = @name
         else
-            @id
+            to_display = @id
+        end
+
+        if truncate and to_display.size > 30
+            "#{to_display[0, 30]}..."
+        else
+            to_display
         end
     end
 

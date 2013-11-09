@@ -6,6 +6,16 @@ require './client'
 
 $redis = Redis.new
 
+def find_client
+    @client = Client.find(params[:id])
+
+    if @client
+        return @client
+    else
+        redirect '/'
+    end
+end
+
 get '/' do
     @clients = Client.all
 
@@ -16,13 +26,9 @@ get '/favicon.ico' do
 end
 
 get '/:id' do
-    @client = Client.find(params[:id])
+    @client = find_client
 
-    if @client and @client.active?
-        erb :show
-    else
-        redirect '/'
-    end
+    erb :show
 end
 
 get '/:id/image' do
@@ -38,9 +44,9 @@ get '/:id/image' do
 end
 
 get '/:id/destroy' do
-    @client = Client.find(params[:id])
+    @client = find_client
 
-    if @client and not @client.active?
+    if not @client.active?
         @client.destroy
     end
 
@@ -48,11 +54,16 @@ get '/:id/destroy' do
 end
 
 get '/:id/manage' do
-    @client = Client.find(params[:id])
+    @client = find_client
 
-    if @client
-        erb :manage
-    else
-        redirect '/'
-    end
+    erb :manage
+end
+
+post '/:id/update' do
+    @client = find_client
+
+    @client.update({name: params[:name]})
+    @client.save
+
+    redirect "/#{params[:id]}/manage"
 end

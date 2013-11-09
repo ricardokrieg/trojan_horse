@@ -39,7 +39,7 @@
 <% if @clients.any? %>
     <div class='client-list'>
         <div class='row'>
-            <% @clients.each_with_index do |client, index| %>
+            <% @clients.each do |client| %>
                 <div class='col-xs-12 col-md-6'>
                     <div class='client'>
                         <div class='client-thumbnail <%= 'inactive' unless client.active? %>'>
@@ -47,7 +47,9 @@
                         </div>
 
                         <div class='client-name'>
-                            <div class='name'>Client #<%= index+1 %></div>
+                            <div class='name'>
+                                <%= client.display_name(true) %>
+                            </div>
 
                             <% if client.active? %>
                                 <div class='look'>

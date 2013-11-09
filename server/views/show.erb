@@ -15,6 +15,9 @@
         background: #999;
         display: inline-block;
     }
+    .img-container.inactive {
+        background: #b94a48;
+    }
 
     a {
         display: block;
@@ -25,7 +28,7 @@
 <div id='client'>
     <div id='time'></div>
 
-    <div class='img-container'>
+    <div class='img-container <%= 'inactive' unless @client.active? %>'>
         <img src="data:image/jpg;base64,<%= @client.image %>" class='img-responsive' />
     </div>
 

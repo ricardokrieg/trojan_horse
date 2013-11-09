@@ -2,4 +2,8 @@
 
 <p><%= @client.id %></p>
 
-<form action='<%=  %>'></form>
+<form action='/<%= @client.id %>/update' method='post'>
+    <input type='text' name='name' value='<%= @client.name %>'>
+
+    <input type='submit'>
+</form>
