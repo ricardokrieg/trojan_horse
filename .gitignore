@@ -1,2 +1,3 @@
 *.exe
 *lock*
+server/dump.rdb
