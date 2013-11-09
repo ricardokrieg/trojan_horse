@@ -48,7 +48,13 @@ class RedisObject
             if $redis.hlen(redis_key) > 0
                 redis_attrs = $redis.hgetall(redis_key)
 
-                redis_object = new(pk)
+                if use_prefix
+                    redis_object = new(pk)
+                else
+                    i = pk.index(':')
+                    size = pk.size
+                    redis_object = new(pk[i+1, size-1])
+                end
                 redis_object.update(redis_attrs)
 
                 return redis_object

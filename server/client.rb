@@ -39,7 +39,7 @@ class Client < RedisObject
             Base64.decode64(@image)
 
             @time = @time.to_i
-            @last_activity = Time.parse(@last_activity)
+            @last_activity = Time.parse(@last_activity) if @last_activity.is_a?(String)
         rescue Exception => e
             @id = nil
 
@@ -49,7 +49,7 @@ class Client < RedisObject
     end
 
     def to_redis
-        [:name, @name.to_json, :image, @image.to_json, :last_activity, @last_activity.to_json, :version, @version.to_json, :groups, @groups.to_json]
+        [:name, @name, :image, @image, :last_activity, @last_activity.to_json, :time, @time, :version, @version, :groups, @groups.to_json]
     end
 
     def recent?(time)
