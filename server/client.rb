@@ -6,7 +6,7 @@ require 'time'
 require './redis_object'
 
 class Client < RedisObject
-    attr_accessor :id, :image, :time, :last_activity, :version, :groups
+    attr_accessor :id, :name, :image, :time, :last_activity, :version, :groups
 
     def self.prefix
         :client
@@ -23,6 +23,7 @@ class Client < RedisObject
     def initialize(pk)
         super
 
+        @name = nil
         @image = nil
         @version = nil
         @time = -1
@@ -48,7 +49,7 @@ class Client < RedisObject
     end
 
     def to_redis
-        [:image, @image.to_json, :last_activity, @last_activity.to_json, :version, @version.to_json, :groups, @groups.to_json]
+        [:name, @name.to_json, :image, @image.to_json, :last_activity, @last_activity.to_json, :version, @version.to_json, :groups, @groups.to_json]
     end
 
     def recent?(time)
