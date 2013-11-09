@@ -3,26 +3,42 @@ require 'mini_magick'
 require 'json'
 require 'time'
 
-class Client
-    attr_reader :id
-    attr_accessor :image, :last_activity, :version, :groups
+require './redis_object'
 
-    def initialize(id, redis_attrs)
-        @id = id
+class Client < RedisObject
+    attr_accessor :id, :image, :time, :last_activity, :version, :groups
+
+    def self.prefix
+        :client
+    end
+
+    def set_primary_key(pk)
+        @id = pk
+    end
+
+    def primary_key
+        @id
+    end
+
+    def initialize(pk)
+        super
+
+        @image = nil
+        @version = nil
+        @time = -1
+        @last_activity = nil
+        @groups = []
+
+    end
+
+    def update(redis_attrs)
+        super(redis_attrs)
 
         begin
-            attrs = JSON.parse(redis_attrs)
+            Base64.decode64(@image)
 
-            image = attrs['image']
-            Base64.decode64(image)
-
-            @time = attrs['time'].to_i
-            @image = attrs['image']
-            @version = attrs['version']
-            @last_activity = Time.parse(attrs['last_activity'])
-
-            @groups = attrs['groups']
-            @groups ||= []
+            @time = @time.to_i
+            @last_activity = Time.parse(@last_activity)
         rescue Exception => e
             @id = nil
 
@@ -31,8 +47,8 @@ class Client
         end
     end
 
-    def save
-        $redis.set(@id, {groups: @groups}.to_json) == 'OK'
+    def to_redis
+        [:image, @image.to_json, :last_activity, @last_activity.to_json, :version, @version.to_json, :groups, @groups.to_json]
     end
 
     def recent?(time)
@@ -51,38 +67,5 @@ class Client
         image.colorspace('Gray') unless active?
 
         Base64.encode64(image.to_blob)
-    end
-
-
-    def destroy
-        $redis.del(@id)
-    end
-
-    class << self
-        def all
-            clients = []
-
-            $redis.keys.each do |id|
-                if client = find(id)
-                    clients << client
-                end
-            end
-
-            return clients
-        end
-
-        def find(id)
-            if client = $redis.get(id)
-                client = new(id, client)
-
-                if client.id.nil?
-                    return nil
-                else
-                    return client
-                end
-            else
-                return nil
-            end
-        end
     end
 end

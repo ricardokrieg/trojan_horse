@@ -13,6 +13,10 @@ class RedisObject
         end
     end
 
+    def destroy
+        $redis.del(redis_key)
+    end
+
     def prefix
         self.class.prefix
     end
@@ -22,8 +26,24 @@ class RedisObject
     end
 
     class << self
-        def find(pk)
-            redis_key = "#{prefix}:#{pk}"
+        def all
+            objects = []
+
+            $redis.keys("#{prefix}:*").each do |key|
+                if redis_object = find(key, false)
+                    objects << redis_object if redis_object.primary_key != nil
+                end
+            end
+
+            return objects
+        end
+
+        def find(pk, use_prefix=true)
+            if use_prefix
+                redis_key = "#{prefix}:#{pk}"
+            else
+                redis_key = pk
+            end
 
             if $redis.hlen(redis_key) > 0
                 redis_attrs = $redis.hgetall(redis_key)

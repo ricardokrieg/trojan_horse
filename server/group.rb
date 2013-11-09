@@ -26,25 +26,4 @@ class Group < RedisObject
     def to_redis
         [:clients, @clients.to_json]
     end
-
-    # def load
-    #     if group = $redis.get(@name)
-    #         group = JSON.parse(group)
-
-    #         @clients = group['clients']
-    #     end
-    # end
-
-    # class << self
-    #     def find(name)
-    #         if group = $redis.get(name)
-    #             group = new(name)
-    #             group.load
-
-    #             return group
-    #         else
-    #             return nil
-    #         end
-    #     end
-    # end
 end
