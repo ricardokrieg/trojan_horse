@@ -1,3 +1,5 @@
+require 'json'
+
 class RedisObject
     def initialize(pk)
         set_primary_key(pk)
@@ -9,7 +11,7 @@ class RedisObject
 
     def update(redis_attrs)
         redis_attrs.each do |key, value|
-            instance_variable_set("@#{key}", value)
+            instance_variable_set("@#{key}", JSON.parse(value))
         end
     end
 

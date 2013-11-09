@@ -1,6 +1,7 @@
 body {
     background: url(bg.png) repeat;
     padding-top: 20px;
+    color: white;
 }
 
 .no-clients {

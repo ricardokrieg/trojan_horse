@@ -1,11 +1,14 @@
 require 'sinatra'
 require 'socket'
 require 'redis'
+require 'debugger'
 
 require './client'
 require './group'
 
 $redis = Redis.new
+
+#-------------------------------------------------------------------------------
 
 def find_object(klass)
     @object = klass.find(params[:id])
@@ -25,71 +28,102 @@ def find_group
     find_object(Group)
 end
 
+#-------------------------------------------------------------------------------
+
 get '/' do
-    @clients = Client.all
-
-    erb :index
-end
-
-get '/favicon.ico' do
-end
-
-get '/groups' do
     @groups = Group.all
 
-    erb :groups
+    grouped_clients = @groups.map {|g| g.clients}.flatten.uniq
+    all_clients = $redis.keys("client:*").map {|k| k.split(':').last}
+
+    ungrouped_clients = []
+    all_clients.each do |client|
+        ungrouped_clients << client unless grouped_clients.include?(client)
+    end
+
+    if ungrouped_clients.any?
+        default_group = Group.new('Default')
+        default_group.clients = ungrouped_clients
+
+        @groups.insert(0, default_group)
+    end
+
+    erb :admin
 end
 
-get '/new-group' do
-    erb :new_group
+#-------------------------------------------------------------------------------
+
+# new
+get '/groups/new' do
+    erb :'groups/new'
 end
 
-get '/group/:id' do
+# show
+get '/groups/:id' do
     @group = find_group
 
-    erb :group
+    erb :'groups/show'
 end
 
+# edit
+get '/groups/:id/edit' do
+    @group = find_group
+
+    erb :'groups/edit'
+end
+
+# create
 post '/groups' do
     @group = Group.new(params[:name])
     @group.save
 
-    redirect '/groups'
-end
-
-get '/:id' do
-    @client = find_client
-
-    erb :show
-end
-
-get '/:id/image' do
-    @client = find_client
-
-    "data:image/jpg;base64,#{@client.image}"
-end
-
-get '/:id/destroy' do
-    @client = find_client
-
-    if not @client.active?
-        @client.destroy
-    end
-
     redirect '/'
 end
 
-get '/:id/manage' do
-    @client = find_client
-
-    erb :manage
+# update
+post '/groups/:id/update' do
 end
 
-post '/:id/update' do
-    @client = find_client
+# destroy
+post '/groups/:id/destroy' do
+end
 
+#-------------------------------------------------------------------------------
+
+before '/clients/*' do
+    @client = find_client
+end
+
+# show
+get '/clients/:id' do
+    erb :show
+end
+
+# edit
+get '/clients/:id/edit' do
+    erb :edit
+end
+
+# update
+post '/clients/:id/update' do
     @client.update({name: params[:name]})
     @client.save
 
     redirect "/#{params[:id]}/manage"
 end
+
+get '/clients/:id/image' do
+    "data:image/jpg;base64,#{@client.image}"
+end
+
+# get '/clients/:id/destroy' do
+#     @client = find_client
+
+#     if not @client.active?
+#         @client.destroy
+#     end
+
+#     redirect '/'
+# end
+
+#-------------------------------------------------------------------------------
