@@ -113,3 +113,30 @@ form, .form-submit {
 .client-name .look, .client-name .edit {
     margin: 0 20px;
 }
+
+/*----------------------------------------------------------------------------*/
+
+#client {
+    text-align: center;
+}
+
+#time {
+    color: white;
+    text-align: right;
+}
+
+.img-container {
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+    padding: 8px;
+    background: #999;
+    display: inline-block;
+}
+.img-container.inactive {
+    background: #b94a48;
+}
+
+#client a {
+    display: block;
+    margin-top: 40px;
+}

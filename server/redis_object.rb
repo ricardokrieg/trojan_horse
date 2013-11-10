@@ -7,6 +7,8 @@ class RedisObject
 
     def save
         $redis.hmset(redis_key, *to_redis) == 'OK'
+
+        $redis.save
     end
 
     def update(redis_attrs)
@@ -27,6 +29,8 @@ class RedisObject
 
     def destroy
         $redis.del(redis_key)
+
+        $redis.save
     end
 
     def prefix
