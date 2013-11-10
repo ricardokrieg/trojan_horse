@@ -41,6 +41,10 @@ before '*' do
     session[:message][:danger] ||= []
 end
 
+get %r{(/.*[^\/])$} do
+    redirect "#{params[:captures].first}/"
+end
+
 #-------------------------------------------------------------------------------
 
 get '/' do
@@ -61,14 +65,15 @@ end
 #-------------------------------------------------------------------------------
 
 # new
-get '/groups/new' do
+get '/groups/new/' do
     @submit_label = 'Create'
+    @cancel_path = '/'
 
     erb :'groups/new'
 end
 
 # show
-get '/groups/:id' do
+get '/groups/:id/' do
     session[:client_back] = request.path_info
     session[:client_edit_back] = request.path_info
 
@@ -91,10 +96,11 @@ get '/groups/:id' do
 end
 
 # edit
-get '/groups/:id/edit' do
+get '/groups/:id/edit/' do
     if params[:id].downcase != 'default'
         @group = find_group
         @submit_label = 'Update'
+        @cancel_path = "/groups/#{params[:id]}"
 
         erb :'groups/edit'
     else
@@ -133,7 +139,7 @@ post '/groups/:id/update' do
 end
 
 # destroy
-get '/groups/:id/destroy' do
+get '/groups/:id/destroy/' do
     if params[:id].downcase != 'default'
         @group = find_group
 
@@ -149,7 +155,7 @@ end
 #-------------------------------------------------------------------------------
 
 # show
-get '/clients/:id' do
+get '/clients/:id/' do
     session[:client_back] ||= '/'
     session[:client_edit_back] = request.path_info
 
@@ -159,7 +165,7 @@ get '/clients/:id' do
 end
 
 # edit
-get '/clients/:id/edit' do
+get '/clients/:id/edit/' do
     session[:client_edit_back] ||= "/clients/#{params[:id]}"
 
     @client = find_client
@@ -183,7 +189,7 @@ post '/clients/:id/update' do
     end
 end
 
-get '/clients/:id/image' do
+get '/clients/:id/image/' do
     @client = find_client
 
     "data:image/jpg;base64,#{@client.image}"
