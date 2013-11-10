@@ -2,7 +2,7 @@
 
 <p><%= @client.id %></p>
 
-<form action='/<%= @client.id %>/update' method='post'>
+<form action='/clients/<%= @client.id %>/update' method='post'>
     <input type='text' name='name' value='<%= @client.name %>'>
 
     <input type='submit'>

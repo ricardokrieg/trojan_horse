@@ -3,12 +3,29 @@
     <title>Admin</title>
 
     <link href='//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css' rel='stylesheet'>
+    <link rel='stylesheet' href='http://code.jquery.com/ui/1.10.3/themes/blitzer/jquery-ui.css' type='text/css' />
+
     <link href='/style.css' rel='stylesheet'>
 
     <script src='http://code.jquery.com/jquery-1.10.1.min.js'></script>
+    <script src='http://code.jquery.com/ui/1.10.3/jquery-ui.js'></script>
+
+    <script src='/jquery.easy-confirm-dialog.min.js'></script>
 </head>
 <body>
     <div class='container'>
+        <div id='messages'>
+            <% session[:message].each do |kind, messages| %>
+                <% messages.each do |message| %>
+                    <div class='alert alert-<%= kind %>'>
+                        <%= message %>
+                    </div>
+                <% end %>
+            <% end %>
+
+            <% session[:message] = nil %>
+        </div>
+
         <%= yield %>
     </div>
 </body>

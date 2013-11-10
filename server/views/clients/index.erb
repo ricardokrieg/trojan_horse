@@ -14,15 +14,15 @@
                             </div>
 
                             <div class='look'>
-                                <a href='/<%= client.id %>' class='btn btn-lg btn-primary'>Look</a>
+                                <a href='/<%= client.primary_key %>' class='btn btn-lg btn-primary'>Look</a>
                             </div>
 
                             <div class='manage'>
-                                <a href='/<%= client.id %>/manage' class='btn btn-lg btn-primary'>Manage</a>
+                                <a href='/<%= client.primary_key %>/manage' class='btn btn-lg btn-primary'>Manage</a>
                             </div>
 
                             <div class='destroy'>
-                                <a href='/<%= client.id %>/destroy' class='btn btn-danger'>Remove</a>
+                                <a href='/<%= client.primary_key %>/destroy' class='btn btn-danger'>Remove</a>
                             </div>
 
                             <% if not client.active? %>

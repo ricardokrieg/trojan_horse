@@ -30,6 +30,19 @@ end
 
 #-------------------------------------------------------------------------------
 
+configure do
+    enable :sessions
+end
+
+before '*' do
+    session[:message] ||= {}
+    session[:message][:success] ||= []
+    session[:message][:warning] ||= []
+    session[:message][:danger] ||= []
+end
+
+#-------------------------------------------------------------------------------
+
 get '/' do
     @groups = Group.all
 
@@ -81,10 +94,16 @@ end
 
 # create
 post '/groups' do
-    @group = Group.new(params[:name])
-    @group.save
+    if params[:name] and params[:name] != ''
+        @group = Group.new(params[:name])
+        @group.save
 
-    redirect '/'
+        session[:message][:success] << 'Group created'
+        redirect '/'
+    else
+        session[:message][:danger] << 'Invalid name'
+        redirect '/groups/new'
+    end
 end
 
 # update
@@ -92,14 +111,15 @@ post '/groups/:id/update' do
 end
 
 # destroy
-post '/groups/:id/destroy' do
+get '/groups/:id/destroy' do
+    @group = find_group
+
+    @group.destroy
+
+    redirect '/'
 end
 
 #-------------------------------------------------------------------------------
-
-# before '/clients/*' do
-#     @client = find_client
-# end
 
 # show
 get '/clients/:id' do
@@ -110,18 +130,24 @@ end
 
 # edit
 get '/clients/:id/edit' do
+    @client = find_client
+
     erb :'clients/edit'
 end
 
 # update
 post '/clients/:id/update' do
+    @client = find_client
+
     @client.update({name: params[:name]})
     @client.save
 
-    redirect "/#{params[:id]}/manage"
+    redirect "/clients/#{params[:id]}/edit"
 end
 
 get '/clients/:id/image' do
+    @client = find_client
+
     "data:image/jpg;base64,#{@client.image}"
 end
 

@@ -4,6 +4,14 @@ body {
     color: white;
 }
 
+form, .form-submit {
+    margin-top: 40px;
+}
+
+.form-submit button, .form-submit a {
+    margin: auto 20px;
+}
+
 /*----------------------------------------------------------------------------*/
 
 #groups .group {
@@ -38,6 +46,13 @@ body {
 
 #groups a:hover {
     text-decoration: none;
+}
+
+#group .actions {
+    margin-top: 40px;
+}
+#group .actions span {
+    margin: auto 40px;
 }
 
 /*----------------------------------------------------------------------------*/
