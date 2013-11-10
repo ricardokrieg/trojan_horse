@@ -69,6 +69,9 @@ end
 
 # show
 get '/groups/:id' do
+    session[:client_back] = request.path_info
+    session[:client_edit_back] = request.path_info
+
     @group = Group.find(params[:id])
 
     if not @group
@@ -118,7 +121,7 @@ end
 post '/groups/:id/update' do
     @group = find_group
 
-    if params[:name] and params[:name] != '' and not ['default', 'new'].include?(params[:name].downcase)
+    if params[:name] and params[:name] != '' and not ['default', 'new', 'edit', 'destroy'].include?(params[:name].downcase)
         @group.update_and_save({name: params[:name]})
 
         session[:message][:success] << 'Group updated'
@@ -147,6 +150,9 @@ end
 
 # show
 get '/clients/:id' do
+    session[:client_back] ||= '/'
+    session[:client_edit_back] = request.path_info
+
     @client = find_client
 
     erb :'clients/show'
@@ -154,6 +160,8 @@ end
 
 # edit
 get '/clients/:id/edit' do
+    session[:client_edit_back] ||= "/clients/#{params[:id]}"
+
     @client = find_client
 
     erb :'clients/edit'
@@ -163,10 +171,16 @@ end
 post '/clients/:id/update' do
     @client = find_client
 
-    @client.update({name: params[:name]})
-    @client.save
+    if not ['edit', 'image'].include?(params[:name].downcase)
+        @client.update({name: params[:name]})
+        @client.save
 
-    redirect "/clients/#{params[:id]}/edit"
+        session[:message][:success] << 'Client updated'
+        redirect "/clients/#{params[:id]}"
+    else
+        session[:message][:danger] << 'Invalid name'
+        redirect "/clients/#{@client.primary_key}/edit"
+    end
 end
 
 get '/clients/:id/image' do
@@ -174,15 +188,5 @@ get '/clients/:id/image' do
 
     "data:image/jpg;base64,#{@client.image}"
 end
-
-# get '/clients/:id/destroy' do
-#     @client = find_client
-
-#     if not @client.active?
-#         @client.destroy
-#     end
-
-#     redirect '/'
-# end
 
 #-------------------------------------------------------------------------------

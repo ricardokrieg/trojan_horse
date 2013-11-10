@@ -1,9 +1,19 @@
-<p>Client Management</p>
+<div id='client-form' class='text-center'>
+    <h1>Edit Client</h1>
 
-<p><%= @client.id %></p>
+    <form action='/clients/<%= @client.primary_key %>/update' method='post' role='form'>
+        <div class='form-group'>
+            <div class='row'>
+                <div class='col-xs-12 col-md-6 col-md-offset-3'>
+                    <label for='name'>Name</label>
+                    <input type='text' class='form-control input-lg' name='name' value='<%= @client.name %>'>
+                </div>
+            </div>
+        </div>
 
-<form action='/clients/<%= @client.id %>/update' method='post'>
-    <input type='text' name='name' value='<%= @client.name %>'>
-
-    <input type='submit'>
-</form>
+        <div class='form-submit'>
+            <a href='<%= session[:client_edit_back] %>' class='btn btn-lg btn-danger'><i class='fa fa-reply'></i> Cancel</a>
+            <button type='submit' class='btn btn-lg btn-primary'><i class='fa fa-check'></i> Update</button>
+        </div>
+    </form>
+</div>

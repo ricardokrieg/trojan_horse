@@ -16,7 +16,7 @@
 
     <div id='client-actions'>
         <span class='back'>
-            <a href='javascript:history.back(1)' class='btn btn-lg btn-primary'><i class='fa fa-reply'></i> Back</a>
+            <a href='<%= session[:client_back] %>' class='btn btn-lg btn-primary'><i class='fa fa-reply'></i> Back</a>
         </span>
         <span class='edit'>
             <a href='/clients/<%= @client.primary_key %>/edit' class='btn btn-lg btn-primary'><i class='fa fa-edit'></i> Edit</a>
