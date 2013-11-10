@@ -84,4 +84,18 @@ class Client < RedisObject
 
         Base64.encode64(image.to_blob)
     end
+
+    class << self
+        def ungrouped(groups)
+            grouped_clients = groups.map {|g| g.clients}.flatten.uniq
+            all_clients = $redis.keys("client:*").map {|k| k.split(':').last}
+
+            ungrouped_clients = []
+            all_clients.each do |client|
+                ungrouped_clients << client unless grouped_clients.include?(client)
+            end
+
+            return ungrouped_clients
+        end
+    end
 end

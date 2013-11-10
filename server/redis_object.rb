@@ -11,7 +11,11 @@ class RedisObject
 
     def update(redis_attrs)
         redis_attrs.each do |key, value|
-            instance_variable_set("@#{key}", JSON.parse(value))
+            begin
+                instance_variable_set("@#{key}", JSON.parse(value))
+            rescue JSON::ParserError
+                instance_variable_set("@#{key}", value)
+            end
         end
     end
 

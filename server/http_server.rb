@@ -33,13 +33,7 @@ end
 get '/' do
     @groups = Group.all
 
-    grouped_clients = @groups.map {|g| g.clients}.flatten.uniq
-    all_clients = $redis.keys("client:*").map {|k| k.split(':').last}
-
-    ungrouped_clients = []
-    all_clients.each do |client|
-        ungrouped_clients << client unless grouped_clients.include?(client)
-    end
+    ungrouped_clients = Client.ungrouped(@groups)
 
     if ungrouped_clients.any?
         default_group = Group.new('Default')
@@ -60,8 +54,21 @@ end
 
 # show
 get '/groups/:id' do
-    @group = find_group
+    @group = Group.find(params[:id])
 
+    if not @group
+        groups = Group.all
+        ungrouped_clients = Client.ungrouped(groups)
+
+        if ungrouped_clients.any?
+            @group = Group.new('Default')
+            @group.clients = ungrouped_clients
+        else
+            redirect '/'
+        end
+    end
+
+    @clients = @group.clients.map {|c| Client.find(c)}
     erb :'groups/show'
 end
 
@@ -90,18 +97,20 @@ end
 
 #-------------------------------------------------------------------------------
 
-before '/clients/*' do
-    @client = find_client
-end
+# before '/clients/*' do
+#     @client = find_client
+# end
 
 # show
 get '/clients/:id' do
-    erb :show
+    @client = find_client
+
+    erb :'clients/show'
 end
 
 # edit
 get '/clients/:id/edit' do
-    erb :edit
+    erb :'clients/edit'
 end
 
 # update
