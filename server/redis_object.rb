@@ -19,6 +19,12 @@ class RedisObject
         end
     end
 
+    def update_and_save(redis_attrs)
+        destroy
+        update(redis_attrs)
+        save
+    end
+
     def destroy
         $redis.del(redis_key)
     end

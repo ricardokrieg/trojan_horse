@@ -1,0 +1,7 @@
+<div id='new-group' class='text-center'>
+    <h1>Edit Group</h1>
+
+    <form action='/groups/<%= @group.primary_key %>/update' method='post' role='form'>
+        <%= erb :'groups/_form' %>
+    </form>
+</div>

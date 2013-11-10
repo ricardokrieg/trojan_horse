@@ -62,6 +62,8 @@ end
 
 # new
 get '/groups/new' do
+    @submit_label = 'Create'
+
     erb :'groups/new'
 end
 
@@ -87,14 +89,20 @@ end
 
 # edit
 get '/groups/:id/edit' do
-    @group = find_group
+    if params[:id].downcase != 'default'
+        @group = find_group
+        @submit_label = 'Update'
 
-    erb :'groups/edit'
+        erb :'groups/edit'
+    else
+        session[:message][:danger] << "You can't edit Default group"
+        redirect '/groups/Default'
+    end
 end
 
 # create
 post '/groups' do
-    if params[:name] and params[:name] != ''
+    if params[:name] and params[:name] != '' and not ['default', 'new'].include?(params[:name].downcase)
         @group = Group.new(params[:name])
         @group.save
 
@@ -108,15 +116,31 @@ end
 
 # update
 post '/groups/:id/update' do
+    @group = find_group
+
+    if params[:name] and params[:name] != '' and not ['default', 'new'].include?(params[:name].downcase)
+        @group.update_and_save({name: params[:name]})
+
+        session[:message][:success] << 'Group updated'
+        redirect '/'
+    else
+        session[:message][:danger] << 'Invalid name'
+        redirect "/groups/#{@group.primary_key}/edit"
+    end
 end
 
 # destroy
 get '/groups/:id/destroy' do
-    @group = find_group
+    if params[:id].downcase != 'default'
+        @group = find_group
 
-    @group.destroy
+        @group.destroy
 
-    redirect '/'
+        redirect '/'
+    else
+        session[:message][:danger] << "You can't remove Default group"
+        redirect '/groups/Default'
+    end
 end
 
 #-------------------------------------------------------------------------------

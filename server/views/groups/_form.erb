@@ -1,0 +1,13 @@
+<div class='form-group'>
+    <div class='row'>
+        <div class='col-xs-12 col-md-6 col-md-offset-3'>
+            <label for='name'>Name</label>
+            <input type='text' class='form-control input-lg' name='name' value='<%= @group.name if @group %>'>
+        </div>
+    </div>
+</div>
+
+<div class='form-submit'>
+    <a href='/' class='btn btn-lg btn-danger'><i class='fa fa-reply'></i> Cancel</a>
+    <button type='submit' class='btn btn-lg btn-primary'><i class='fa fa-check'></i> <%= @submit_label %></button>
+</div>

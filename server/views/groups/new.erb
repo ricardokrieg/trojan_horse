@@ -2,18 +2,6 @@
     <h1>New Group</h1>
 
     <form action='/groups' method='post' role='form'>
-        <div class='form-group'>
-            <div class='row'>
-                <div class='col-xs-12 col-md-6 col-md-offset-3'>
-                    <label for='name'>Name</label>
-                    <input type='text' class='form-control input-lg' name='name'>
-                </div>
-            </div>
-        </div>
-
-        <div class='form-submit'>
-            <a href='/' class='btn btn-lg btn-danger'>Cancel</a>
-            <button type='submit' class='btn btn-lg btn-primary'>Submit</button>
-        </div>
+        <%= erb :'groups/_form' %>
     </form>
 </div>
