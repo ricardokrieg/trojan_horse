@@ -29,11 +29,11 @@ form, .form-submit {
     box-shadow: 5px 5px 30px #000;
 }
 #groups .group .count, #groups .group h2 {
-    position:absolute;
-    left:0;
-    right:0;
-    margin-left:auto;
-    margin-right:auto;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
 }
 #groups .group .count {
     top: 0;
@@ -48,10 +48,25 @@ form, .form-submit {
     text-decoration: none;
 }
 
-#group .actions {
-    margin-top: 40px;
+#group {
+    margin-bottom: 200px;
 }
-#group .actions span {
+
+#group-actions {
+    text-align: center;
+    margin-top: 40px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 40px;
+    background: url(bg.png) repeat;
+}
+#group-actions.over {
+    -webkit-box-shadow:  0px -2px 20px 1px #000;
+    box-shadow:  0px -2px 20px 1px #000;
+}
+#group-actions span {
     margin: auto 40px;
 }
 

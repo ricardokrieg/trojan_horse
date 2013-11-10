@@ -37,14 +37,28 @@
     <% else %>
         <div class='no-clients'>No clients</div>
     <% end %>
-
-    <div class='actions text-center'>
-        <span class='back'>
-            <a href='/' class='btn btn-lg btn-primary'>Back to Group list</a>
-        </span>
-
-        <span class='destroy'>
-            <a href='/groups/<%= @group.primary_key %>/destroy' class='confirm btn btn-lg btn-danger' title='Are you sure you want to delete this group?'>Delete Group</a>
-        </span>
-    </div>
 </div>
+
+<div id='group-actions'>
+    <span class='back'>
+        <a href='/' class='btn btn-lg btn-primary'>Back to Group list</a>
+    </span>
+
+    <span class='destroy'>
+        <a href='/groups/<%= @group.primary_key %>/destroy' class='confirm btn btn-lg btn-danger' title='Are you sure you want to delete this group?'>Delete Group</a>
+    </span>
+</div>
+
+<script type='text/javascript'>
+    check_group_actions_shadow = function() {
+        if ($('#group-actions').position().top < ($('#group').position().top + $('#group').height() - $(document).scrollTop())) {
+            $('#group-actions').addClass('over');
+        } else {
+            $('#group-actions').removeClass('over');
+        }
+    }
+
+    $(document).ready(check_group_actions_shadow());
+    $(window).resize(check_group_actions_shadow);
+    $(window).scroll(check_group_actions_shadow);
+</script>
