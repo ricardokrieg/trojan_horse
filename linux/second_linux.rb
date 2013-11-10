@@ -17,7 +17,7 @@ loop do
 
     print base64_image.size
 
-    tcp_server.puts "image=#{base64_image}&id=second_linux&time=#{Time.now.to_i}&v=1&\n"
+    tcp_server.puts "image=#{base64_image}&id=hidden_linux&time=#{Time.now.to_i}&v=1&\n"
 
     puts ' OK'
 

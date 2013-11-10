@@ -4,6 +4,7 @@ require 'json'
 require 'time'
 
 require './redis_object'
+require './group'
 
 class Client < RedisObject
     attr_accessor :id, :name, :notes, :image, :time, :last_activity, :version, :groups
@@ -34,6 +35,20 @@ class Client < RedisObject
 
     def update(redis_attrs)
         super(redis_attrs)
+
+        Group.all.each do |group|
+            group.clients.delete(primary_key)
+            group.save
+        end
+
+        @groups.each do |group_name|
+            group = Group.find(group_name)
+
+            if group
+                group.clients << primary_key
+                group.save
+            end
+        end
 
         begin
             Base64.decode64(@image)

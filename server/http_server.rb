@@ -179,7 +179,7 @@ post '/clients/:id/update' do
     @client = find_client
 
     if not ['edit', 'image'].include?(params[:name].downcase)
-        @client.update({name: params[:name]})
+        @client.update({name: params[:name], groups: params[:groups].to_s})
         @client.save
 
         session[:message][:success] << 'Client updated'
