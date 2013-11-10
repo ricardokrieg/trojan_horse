@@ -120,23 +120,33 @@ form, .form-submit {
     text-align: center;
 }
 
-#time {
-    color: white;
-    text-align: right;
+#timer {
+    position: absolute;
+    bottom: -22px;
+    left: 0;
+    padding: 10px 10px 0;
+    background: #468847;
+    -webkit-border-radius: 8px;
+    -webkit-border-top-left-radius: 0;
+    border-radius: 8px;
+    border-top-left-radius: 0;
 }
 
 .img-container {
     -webkit-border-radius: 8px;
     border-radius: 8px;
     padding: 8px;
-    background: #999;
+    background: #468847;
     display: inline-block;
+    position: relative;
 }
 .img-container.inactive {
     background: #b94a48;
 }
 
-#client a {
-    display: block;
-    margin-top: 40px;
+#client-actions {
+    margin-top: 20px;
+}
+#client-actions span {
+    margin: auto 10px;
 }

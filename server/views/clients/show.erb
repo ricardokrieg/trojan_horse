@@ -1,41 +1,32 @@
 <div id='client'>
-    <div id='time'></div>
-
     <div class='img-container <%= 'inactive' unless @client.active? %>'>
-        <img src="data:image/jpg;base64,<%= @client.image %>" class='img-responsive' />
+        <img id='image' src="data:image/jpg;base64,<%= @client.image %>" class='img-responsive' />
+
+        <% if @client.active? %>
+            <div id='timer'>
+                <i class='fa fa-dashboard'></i>
+                <span></span>
+            </div>
+        <% end %>
     </div>
 
     <div class='name'>
         <%= @client.display_name %>
     </div>
 
-    <br>
-
-    <a href='/' class='btn btn-lg btn-primary'>Back to home</a>
+    <div id='client-actions'>
+        <span class='back'>
+            <a href='javascript:history.back(1)' class='btn btn-lg btn-primary'><i class='fa fa-reply'></i> Back</a>
+        </span>
+        <span class='edit'>
+            <a href='/clients/<%= @client.primary_key %>/edit' class='btn btn-lg btn-primary'><i class='fa fa-edit'></i> Edit</a>
+        </span>
+    </div>
 </div>
 
-<script type='text/javascript'>
-    $(document).ready(function(){
-        last_time = $.now();
-        update = true;
-
-        setInterval(function(){
-            if (update) {
-                update = false;
-
-                $.get("<%= @client.id %>/image", function(data){
-                    if (data == 'redirect') {
-                        document.location = '/';
-                    } else {
-                        $('img').attr('src', data);
-
-                        $('#time').html(($.now() - last_time)/1000 + 's');
-                        last_time = $.now();
-
-                        update = true;
-                    }
-                });
-            }
-        }, 50);
-    });
-</script>
+<% if @client.active? %>
+    <script type='text/javascript'>
+        window.client_id = '<%= @client.primary_key %>';
+        $(document).ready(window.update_client);
+    </script>
+<% end %>

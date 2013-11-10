@@ -58,15 +58,7 @@
 </div>
 
 <script type='text/javascript'>
-    check_group_actions_shadow = function() {
-        if ($('#group-actions').position().top < ($('#group').position().top + $('#group').height() - $(document).scrollTop())) {
-            $('#group-actions').addClass('over');
-        } else {
-            $('#group-actions').removeClass('over');
-        }
-    }
-
-    $(document).ready(check_group_actions_shadow());
-    $(window).resize(check_group_actions_shadow);
-    $(window).scroll(check_group_actions_shadow);
+    $(document).ready(window.check_group_actions_shadow());
+    $(window).resize(window.check_group_actions_shadow);
+    $(window).scroll(window.check_group_actions_shadow);
 </script>
