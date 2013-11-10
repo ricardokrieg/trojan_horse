@@ -1,23 +1,27 @@
 <h1>Groups</h1>
 
-<div class='row'>
-    <% @groups.each do |group| %>
-        <div class='col-xs-12 col-md-6 col-lg-4'>
-            <a href='/groups/<%= group.primary_key %>'>
-                <div class='group'>
-                    <div class='count'>
-                        <%= group.clients.size %>
-                    </div>
+<div id='groups'>
+    <div class='row'>
+        <% @groups.each do |group| %>
+            <div class='col-xs-12 col-md-6 col-lg-4'>
+                <a href='/groups/<%= group.primary_key %>'>
+                    <span class='group label label-primary'>
+                        <div class='count'>
+                            <%= group.clients.size %>
+                        </div>
 
-                    <h2><%= group.name %></h2>
-                </div>
+                        <h2><%= group.name %></h2>
+                    </span>
+                </a>
+            </div>
+        <% end %>
+
+        <div class='col-xs-12 col-md-6 col-lg-4'>
+            <a href='/groups/new'>
+                <span class='group label label-success'>
+                    <h2>New Group</h2>
+                </span>
             </a>
         </div>
-    <% end %>
-
-    <div class='col-xs-12 col-md-6 col-lg-4'>
-        <a href='/groups/new'>
-            New Group
-        </a>
     </div>
 </div>
