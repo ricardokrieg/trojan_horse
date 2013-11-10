@@ -36,6 +36,8 @@ class Client < RedisObject
     def update(redis_attrs)
         super(redis_attrs)
 
+        @groups = [] if @groups == '' or @groups == nil
+
         Group.all.each do |group|
             group.clients.delete(primary_key)
             group.save
