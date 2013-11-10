@@ -25,3 +25,8 @@ window.update_client = function() {
         }
     }, 50);
 }
+
+window.remove_name = function() {
+    $('#client-name').val('');
+    $('#form-client').submit();
+}

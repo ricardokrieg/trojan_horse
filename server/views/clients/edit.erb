@@ -1,12 +1,38 @@
 <div id='client-form' class='text-center'>
     <h1>Edit Client</h1>
 
-    <form action='/clients/<%= @client.primary_key %>/update' method='post' role='form'>
+    <form id='form-client' action='/clients/<%= @client.primary_key %>/update' method='post' role='form'>
         <div class='form-group'>
             <div class='row'>
                 <div class='col-xs-12 col-md-6 col-md-offset-3'>
                     <label for='name'>Name</label>
-                    <input type='text' class='form-control input-lg' name='name' value='<%= @client.name %>'>
+
+                    <div class="input-group">
+                        <input id='client-name' type='text' class='form-control input-lg' name='name' value='<%= @client.name %>'>
+                        <span class='input-group-btn'>
+                            <a id='remove-name' class='btn btn-lg btn-danger confirm' title='Are you sure you want to remove the name?'><i class='fa fa-ban' style='margin: 3px auto'></i> </a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class='form-group client-groups'>
+            <label>Groups</label>
+            <div class='row'>
+                <div class='col-xs-12 col-md-6 col-md-offset-3 client-group'>
+                    <div class='row'>
+                        <% @groups.each do |checked, name| %>
+                            <div class='col-xs-12 col-sm-6 col-md-4'>
+                                <div class='checkbox-inline'>
+                                    <label>
+                                        <input type='checkbox' value='<%= name %>' <%= 'checked=checked' if checked %>>
+                                        <%= name %>
+                                    </label>
+                                </div>
+                            </div>
+                        <% end %>
+                    </div>
                 </div>
             </div>
         </div>
@@ -17,3 +43,7 @@
         </div>
     </form>
 </div>
+
+<script type='text/javascript'>
+    $('#remove-name').click(window.remove_name);
+</script>

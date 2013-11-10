@@ -30,7 +30,6 @@ class Client < RedisObject
         @time = -1
         @last_activity = nil
         @groups = []
-
     end
 
     def update(redis_attrs)

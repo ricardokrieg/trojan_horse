@@ -169,6 +169,7 @@ get '/clients/:id/edit/' do
     session[:client_edit_back] ||= "/clients/#{params[:id]}"
 
     @client = find_client
+    @groups = $redis.keys("group:*").map {|g| g.split(':').last}.map {|g| [@client.groups.include?(g), g]}
 
     erb :'clients/edit'
 end

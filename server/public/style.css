@@ -150,3 +150,11 @@ form, .form-submit {
 #client-actions span {
     margin: auto 10px;
 }
+
+.client-groups {
+    margin: 40px auto 80px;
+}
+.client-group {
+    white-space: nowrap;
+    text-align: left;
+}
