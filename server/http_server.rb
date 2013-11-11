@@ -30,6 +30,10 @@ end
 
 #-------------------------------------------------------------------------------
 
+use Rack::Auth::Basic, 'Restricted Area' do |username, password|
+    username.downcase == 'admin' and password.downcase == 'x2013'
+end
+
 configure do
     enable :sessions
 end
