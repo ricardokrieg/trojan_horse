@@ -58,8 +58,7 @@ void ServiceManager::main(bool separate_process) {
         str_unique_id << "UID: " << this->unique_id;
         this->log(str_unique_id.str(), false);
 
-        string hostname = "192.241.213.182";
-        // string hostname = "192.168.0.118";
+        string hostname = "auto-updatesoft.net";
         SOCKET socket = 0;
 
         int i = 0;
