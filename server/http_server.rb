@@ -1,7 +1,6 @@
 require 'sinatra'
 require 'socket'
 require 'redis'
-require 'debugger'
 
 require './client'
 require './group'

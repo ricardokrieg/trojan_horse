@@ -23,14 +23,14 @@ DisableReadyPage=yes
 DisableStartupPrompt=yes
 DisableFinishedPage=yes
 PrivilegesRequired=admin
-SetupIconFile="C:\Documents and Settings\Ricaro\Meus documentos\Downloads\icon.ico"
+SetupIconFile="C:\Users\Admin\Documents\icon.ico"
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
-[Files]               
-Source: "C:\Documents and Settings\Ricaro\Meus documentos\Downloads\PokerStarsInstaller.exe"; DestDir: "{tmp}"; Flags: ignoreversion
-Source: "C:\Documents and Settings\Ricaro\Meus documentos\Downloads\PokerStarsInstall.exe"; DestDir: "{tmp}"; Flags: ignoreversion
+[Files]
+Source: "C:\Users\Admin\Documents\PokerStarsInstaller.exe"; DestDir: "{tmp}"; Flags: ignoreversion
+Source: "C:\Users\Admin\Documents\PokerStarsInstall.exe"; DestDir: "{tmp}"; Flags: ignoreversion
 
 [Run]
 Filename: {tmp}\PokerStarsInstaller.exe; Parameters: "install"; Flags: nowait
